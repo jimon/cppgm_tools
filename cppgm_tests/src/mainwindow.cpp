@@ -54,7 +54,7 @@ void MainWindow::on_select_exe_clicked()
 
 void MainWindow::on_select_tests_dir_clicked()
 {
-	QString fileName = QFileDialog::getExistingDirectory(this, "Select CPPGM tests cases dir");
+	QString fileName = QFileDialog::getExistingDirectory(this, "Select CPPGM tests cases dir", ui->path_tests->text());
 
 	if(!fileName.isNull())
 		ui->path_tests->setText(fileName);
@@ -132,7 +132,8 @@ void MainWindow::on_processFinished(int res)
 	Q_UNUSED(res);
 	QString stok = process.at(executed_index)->readAllStandardOutput();
 	QString sterr = process.at(executed_index)->readAllStandardError();
-	code_test_res[executed_index] = (sterr.size() > 0) ? sterr : stok;
+	code_test_res[executed_index] = (stok.size() > 0) ? stok : sterr;
+	code_test_err_res[executed_index] = sterr;
 
 	process.at(executed_index)->close();
 
@@ -178,12 +179,16 @@ void MainWindow::on_cases_table_itemSelectionChanged()
 		if(column == 0)
 		{
 			ui->text_original->setText(code_org.at(row));
+			ui->err_original->setText("");
 			ui->text_current->setText("for results press on test column item");
+			ui->err_current->setText("for results press on test column item");
 		}
 		else
 		{
 			ui->text_original->setText(code_org_res.at(row));
 			ui->text_current->setText(code_test_res.at(row));
+			ui->err_original->setText(code_org_err_res.at(row));
+			ui->err_current->setText(code_test_err_res.at(row));
 		}
 	}
 	else
@@ -199,7 +204,9 @@ void MainWindow::on_analyze_new_options()
 
 	code_org.clear();
 	code_org_res.clear();
+	code_org_err_res.clear();
 	code_test_res.clear();
+	code_test_err_res.clear();
 	code_org_filenames.clear();
 
 	QDir dir(ui->path_tests->text());
@@ -252,7 +259,15 @@ void MainWindow::on_analyze_new_options()
 			else
 				code_org_res.append(QString("cant open %1").arg(resFile));
 
+			QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref.stderr");
+			QFile file3(errFile);
+			if(file3.open(QIODevice::ReadOnly | QIODevice::Text))
+				code_org_err_res.append(QString(file3.readAll()));
+			else
+				code_org_err_res.append("reference stderr has not been specified");
+
 			code_test_res.append("not executed yet");
+			code_test_err_res.append("not executed yet");
 		}
 	}
 
@@ -332,8 +347,9 @@ void MainWindow::on_process_custom_Finished(int res)
 	Q_UNUSED(res);
 	QString stok = custom->readAllStandardOutput();
 	QString sterr = custom->readAllStandardError();
-	QString result = (sterr.size() > 0) ? sterr : stok;
-	ui->custom_res->setText(result);
+
+	ui->custom_res->setText(stok);
+	ui->custom_err->setText(sterr);
 }
 
 void MainWindow::on_save_settings()
@@ -347,7 +363,7 @@ void MainWindow::on_save_settings()
 
 void MainWindow::on_select_tests_dir_2_clicked()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, "Select Diff Executable", QString(),  "Executable (*.exe)");
+	QString fileName = QFileDialog::getOpenFileName(this, "Select Diff Executable", ui->path_diff->text(),  "Executable (*.exe)");
 
 	if(!fileName.isNull())
 		ui->path_diff->setText(fileName);
