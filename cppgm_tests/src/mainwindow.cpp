@@ -54,7 +54,7 @@ void MainWindow::on_select_exe_clicked()
 
 void MainWindow::on_select_tests_dir_clicked()
 {
-	QString fileName = QFileDialog::getExistingDirectory(this, "Select CPPGM tests cases dir");
+	QString fileName = QFileDialog::getExistingDirectory(this, "Select CPPGM tests cases dir", ui->path_tests->text());
 
 	if(!fileName.isNull())
 		ui->path_tests->setText(fileName);
@@ -347,7 +347,7 @@ void MainWindow::on_save_settings()
 
 void MainWindow::on_select_tests_dir_2_clicked()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, "Select Diff Executable", QString(),  "Executable (*.exe)");
+	QString fileName = QFileDialog::getOpenFileName(this, "Select Diff Executable", ui->path_diff->text(),  "Executable (*.exe)");
 
 	if(!fileName.isNull())
 		ui->path_diff->setText(fileName);
