@@ -132,7 +132,9 @@ void MainWindow::on_processFinished(int res)
 	Q_UNUSED(res);
 	QString stok = process.at(executed_index)->readAllStandardOutput();
 	QString sterr = process.at(executed_index)->readAllStandardError();
-	code_test_res[executed_index] = (sterr.size() > 0) ? sterr : stok;
+	//code_test_res[executed_index] = (sterr.size() > 0) ? sterr : stok;
+	code_test_res[executed_index] = stok;
+	code_test_err_res[executed_index] = sterr;
 
 	process.at(executed_index)->close();
 
@@ -184,6 +186,8 @@ void MainWindow::on_cases_table_itemSelectionChanged()
 		{
 			ui->text_original->setText(code_org_res.at(row));
 			ui->text_current->setText(code_test_res.at(row));
+			ui->err_original->setText(code_org_err_res.at(row));
+			ui->err_current->setText(code_test_err_res.at(row));
 		}
 	}
 	else
@@ -200,6 +204,7 @@ void MainWindow::on_analyze_new_options()
 	code_org.clear();
 	code_org_res.clear();
 	code_test_res.clear();
+	code_test_err_res.clear();
 	code_org_filenames.clear();
 
 	QDir dir(ui->path_tests->text());
@@ -252,7 +257,15 @@ void MainWindow::on_analyze_new_options()
 			else
 				code_org_res.append(QString("cant open %1").arg(resFile));
 
+			QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref.stderr");
+			QFile file3(errFile);
+			if(file3.open(QIODevice::ReadOnly | QIODevice::Text))
+				code_org_err_res.append(QString(file3.readAll()));
+			else
+				code_org_err_res.append(QString("cant open %1").arg(resFile));
+
 			code_test_res.append("not executed yet");
+			code_test_err_res.append("not executed yet");
 		}
 	}
 
