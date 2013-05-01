@@ -332,8 +332,9 @@ void MainWindow::on_process_custom_Finished(int res)
 	Q_UNUSED(res);
 	QString stok = custom->readAllStandardOutput();
 	QString sterr = custom->readAllStandardError();
-	QString result = (sterr.size() > 0) ? sterr : stok;
-	ui->custom_res->setText(result);
+
+	ui->custom_res->setText(stok);
+	ui->custom_err->setText(sterr);
 }
 
 void MainWindow::on_save_settings()
