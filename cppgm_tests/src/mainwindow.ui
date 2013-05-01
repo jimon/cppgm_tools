@@ -202,6 +202,9 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QTextEdit" name="err_original"/>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="layoutWidget">
@@ -243,6 +246,9 @@
                <enum>QTextEdit::NoWrap</enum>
               </property>
              </widget>
+            </item>
+            <item>
+             <widget class="QTextEdit" name="err_current"/>
             </item>
            </layout>
           </widget>

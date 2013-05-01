@@ -45,7 +45,9 @@ private:
 
 	QList<QString> code_org;
 	QList<QString> code_org_res;
+	QList<QString> code_org_err_res;
 	QList<QString> code_test_res;
+	QList<QString> code_test_err_res;
 	QList<QProcess*> process;
 	QList<QString> code_org_filenames;
 	QProcess * custom;
