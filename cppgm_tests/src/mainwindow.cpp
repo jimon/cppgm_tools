@@ -132,7 +132,6 @@ void MainWindow::on_processFinished(int res)
 	Q_UNUSED(res);
 	QString stok = process.at(executed_index)->readAllStandardOutput();
 	QString sterr = process.at(executed_index)->readAllStandardError();
-	//code_test_res[executed_index] = (sterr.size() > 0) ? sterr : stok;
 	code_test_res[executed_index] = stok;
 	code_test_err_res[executed_index] = sterr;
 
@@ -180,7 +179,9 @@ void MainWindow::on_cases_table_itemSelectionChanged()
 		if(column == 0)
 		{
 			ui->text_original->setText(code_org.at(row));
+			ui->err_original->setText("");
 			ui->text_current->setText("for results press on test column item");
+			ui->err_current->setText("for results press on test column item");
 		}
 		else
 		{
@@ -262,7 +263,7 @@ void MainWindow::on_analyze_new_options()
 			if(file3.open(QIODevice::ReadOnly | QIODevice::Text))
 				code_org_err_res.append(QString(file3.readAll()));
 			else
-				code_org_err_res.append(QString("cant open %1").arg(resFile));
+				code_org_err_res.append("reference stderr has not been specified");
 
 			code_test_res.append("not executed yet");
 			code_test_err_res.append("not executed yet");
