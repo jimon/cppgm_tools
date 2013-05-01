@@ -132,7 +132,7 @@ void MainWindow::on_processFinished(int res)
 	Q_UNUSED(res);
 	QString stok = process.at(executed_index)->readAllStandardOutput();
 	QString sterr = process.at(executed_index)->readAllStandardError();
-	code_test_res[executed_index] = stok;
+	code_test_res[executed_index] = (stok.size() > 0) ? stok : sterr;
 	code_test_err_res[executed_index] = sterr;
 
 	process.at(executed_index)->close();
