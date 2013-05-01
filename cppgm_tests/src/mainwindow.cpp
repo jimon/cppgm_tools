@@ -204,6 +204,7 @@ void MainWindow::on_analyze_new_options()
 
 	code_org.clear();
 	code_org_res.clear();
+	code_org_err_res.clear();
 	code_test_res.clear();
 	code_test_err_res.clear();
 	code_org_filenames.clear();
