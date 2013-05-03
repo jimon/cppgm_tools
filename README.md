@@ -14,3 +14,7 @@ use qt creator with mingw
 
 gui tool for run tests, can run custom test, diff, etc  
 required qt 5+
+
+## file_separator
+
+small tool for big file separation to small ones, needed for big tests, like 300 in pa3
