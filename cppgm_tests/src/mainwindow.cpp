@@ -142,7 +142,7 @@ void MainWindow::on_processFinished(int res)
 	const QString& a = code_org_res[executed_index];
 	const QString& b = code_test_res[executed_index];
 
-	bool failed = false;
+	bool match = false;
 
 	QString::const_iterator ref = a.constBegin();
 	QString::const_iterator ref_end = a.constEnd();
@@ -153,19 +153,19 @@ void MainWindow::on_processFinished(int res)
 		if (*my == '\r') {
 			my++;
 			if (my == my_end) {
-				failed = ref == ref_end;
+				match = ref == ref_end;
 				break;
 			}
 		}
-		if (*my != *ref) {
-			failed = true;
+		match = (*my == *ref);
+		if (!match) {
 			break;
 		}
 		my++;
 		ref++;
 	}
 
-	if(failed)
+	if(!match)
 	{
 		ui->cases_table->item(executed_index, 1)->setBackgroundColor(QColor(255, 128, 128));
 		ui->cases_table->item(executed_index, 1)->setText("fail");
