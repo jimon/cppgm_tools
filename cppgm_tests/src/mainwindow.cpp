@@ -139,12 +139,31 @@ void MainWindow::on_processFinished(int res)
 
 	ui->progressBar->setValue((float)executed_index / (float)code_org.count());
 
-	QString a = code_org_res[executed_index];
-	QString b = code_test_res[executed_index];
+	const QString& a = code_org_res[executed_index];
+	const QString& b = code_test_res[executed_index];
 
-	b = b.remove('\r');
+	bool failed = false;
 
-	bool failed = a != b;
+	QString::const_iterator ref = a.constBegin();
+	QString::const_iterator ref_end = a.constEnd();
+	QString::const_iterator my = b.constBegin();
+	QString::const_iterator my_end = b.constEnd();
+
+	while (my != my_end && ref != ref_end) {
+		if (*my == '\r') {
+			my++;
+			if (my == my_end) {
+				failed = ref == ref_end;
+				break;
+			}
+		}
+		if (*my != *ref) {
+			failed = true;
+			break;
+		}
+		my++;
+		ref++;
+	}
 
 	if(failed)
 	{
@@ -178,23 +197,23 @@ void MainWindow::on_cases_table_itemSelectionChanged()
 
 		if(column == 0)
 		{
-			ui->text_original->setText(code_org.at(row));
-			ui->err_original->setText("");
-			ui->text_current->setText("for results press on test column item");
-			ui->err_current->setText("for results press on test column item");
+			ui->text_original->setPlainText(code_org.at(row));
+			ui->err_original->setPlainText("");
+			ui->text_current->setPlainText("for results press on test column item");
+			ui->err_current->setPlainText("for results press on test column item");
 		}
 		else
 		{
-			ui->text_original->setText(code_org_res.at(row));
-			ui->text_current->setText(code_test_res.at(row));
-			ui->err_original->setText(code_org_err_res.at(row));
-			ui->err_current->setText(code_test_err_res.at(row));
+			ui->text_original->setPlainText(code_org_res.at(row));
+			ui->text_current->setPlainText(code_test_res.at(row));
+			ui->err_original->setPlainText(code_org_err_res.at(row));
+			ui->err_current->setPlainText(code_test_err_res.at(row));
 		}
 	}
 	else
 	{
-		ui->text_original->setText("");
-		ui->text_current->setText("");
+		ui->text_original->setPlainText("");
+		ui->text_current->setPlainText("");
 	}
 }
 
@@ -348,8 +367,8 @@ void MainWindow::on_process_custom_Finished(int res)
 	QString stok = custom->readAllStandardOutput();
 	QString sterr = custom->readAllStandardError();
 
-	ui->custom_res->setText(stok);
-	ui->custom_err->setText(sterr);
+	ui->custom_res->setPlainText(stok);
+	ui->custom_err->setPlainText(sterr);
 }
 
 void MainWindow::on_save_settings()

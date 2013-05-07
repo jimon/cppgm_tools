@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="options_tab">
        <attribute name="title">
@@ -196,14 +196,10 @@
              </layout>
             </item>
             <item>
-             <widget class="QTextEdit" name="text_original">
-              <property name="lineWrapMode">
-               <enum>QTextEdit::NoWrap</enum>
-              </property>
-             </widget>
+             <widget class="QPlainTextEdit" name="text_original"/>
             </item>
             <item>
-             <widget class="QTextEdit" name="err_original"/>
+             <widget class="QPlainTextEdit" name="err_original"/>
             </item>
            </layout>
           </widget>
@@ -241,14 +237,10 @@
              </layout>
             </item>
             <item>
-             <widget class="QTextEdit" name="text_current">
-              <property name="lineWrapMode">
-               <enum>QTextEdit::NoWrap</enum>
-              </property>
-             </widget>
+             <widget class="QPlainTextEdit" name="text_current"/>
             </item>
             <item>
-             <widget class="QTextEdit" name="err_current"/>
+             <widget class="QPlainTextEdit" name="err_current"/>
             </item>
            </layout>
           </widget>
@@ -300,11 +292,7 @@
              </layout>
             </item>
             <item>
-             <widget class="QTextEdit" name="custom_src">
-              <property name="lineWrapMode">
-               <enum>QTextEdit::NoWrap</enum>
-              </property>
-             </widget>
+             <widget class="QPlainTextEdit" name="custom_src"/>
             </item>
            </layout>
           </widget>
@@ -335,14 +323,10 @@
              </layout>
             </item>
             <item>
-             <widget class="QTextEdit" name="custom_res">
-              <property name="lineWrapMode">
-               <enum>QTextEdit::NoWrap</enum>
-              </property>
-             </widget>
+             <widget class="QPlainTextEdit" name="custom_res"/>
             </item>
             <item>
-             <widget class="QTextEdit" name="custom_err"/>
+             <widget class="QPlainTextEdit" name="custom_err"/>
             </item>
            </layout>
           </widget>
