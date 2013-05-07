@@ -149,20 +149,24 @@ void MainWindow::on_processFinished(int res)
 	QString::const_iterator my = b.constBegin();
 	QString::const_iterator my_end = b.constEnd();
 
-	while (my != my_end && ref != ref_end) {
-		if (*my == '\r') {
-			my++;
-			if (my == my_end) {
-				match = ref == ref_end;
+	if (a.size() == 0 && b.size() == 0) {
+		match = true;
+	} else {
+		while (my != my_end && ref != ref_end) {
+			if (*my == '\r') {
+				my++;
+				if (my == my_end) {
+					match = ref == ref_end;
+					break;
+				}
+			}
+			match = (*my == *ref);
+			if (!match) {
 				break;
 			}
+			my++;
+			ref++;
 		}
-		match = (*my == *ref);
-		if (!match) {
-			break;
-		}
-		my++;
-		ref++;
 	}
 
 	if(!match)
