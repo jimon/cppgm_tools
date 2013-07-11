@@ -328,7 +328,16 @@ void MainWindow::on_analyze_new_options()
 			if(file3.open(QIODevice::ReadOnly | QIODevice::Text))
 				code_org_err_res.append(QString(file3.readAll()));
 			else
-				code_org_err_res.append("reference stderr has not been specified");
+			{
+				QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref.stdout");
+				QFile file3_2(errFile);
+				if(file3_2.open(QIODevice::ReadOnly | QIODevice::Text))
+				{
+					code_org_err_res.append(QString(file3_2.readAll()));
+				}
+				else
+					code_org_err_res.append("reference stderr has not been specified");
+			}
 
 			code_test_res.append("not executed yet");
 			code_test_err_res.append("not executed yet");
