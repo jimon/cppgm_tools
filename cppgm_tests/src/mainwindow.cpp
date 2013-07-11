@@ -201,6 +201,11 @@ void MainWindow::on_processFinished(int res)
 		}
 	}
 
+	if(sterr.size() && code_org_err_res[executed_index].size())
+	{
+		match = true;
+	}
+
 	if(!match)
 	{
 		ui->cases_table->item(executed_index, 1)->setBackgroundColor(QColor(255, 128, 128));
