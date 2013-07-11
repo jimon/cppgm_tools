@@ -37,8 +37,8 @@ private slots:
 	void on_custom_run_clicked();
 	void on_process_custom_Finished(int res);
 	void on_save_settings();
-
 	void on_select_tests_dir_2_clicked();
+	void on_pa5style_stateChanged(int arg1);
 
 private:
 	Ui::MainWindow * ui;
@@ -52,6 +52,8 @@ private:
 	QList<QString> code_org_filenames;
 	QProcess * custom;
 	int executed_index;
+
+	bool block_settings_save;
 };
 
 #endif

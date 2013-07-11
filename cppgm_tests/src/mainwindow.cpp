@@ -4,9 +4,10 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTextCodec>
 
 MainWindow::MainWindow(QWidget * parent)
-	:QMainWindow(parent), ui(new Ui::MainWindow), custom(NULL)
+	:QMainWindow(parent), ui(new Ui::MainWindow), custom(NULL), block_settings_save(false)
 {
 	ui->setupUi(this);
 	ui->progressBar->setValue(0);
@@ -18,10 +19,15 @@ MainWindow::MainWindow(QWidget * parent)
 	}
 	else
 	{
+		block_settings_save = true;
+
 		QSettings settings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()), QSettings::IniFormat);
 		ui->path_exe->setText(settings.value("exe").toString());
+		ui->pa5style->setChecked(settings.value("pa5style").toBool());
 		ui->path_tests->setText(settings.value("tests").toString());
 		ui->path_diff->setText(settings.value("diff").toString());
+
+		block_settings_save = false;
 
 		//ui->path_exe->setText("C:/Work/projects/cppgm/code/pa1/pa1-build-Qt_Mingw-Debug/debug/pa1.exe");
 		//ui->path_tests->setText("C:/Work/projects/cppgm/tasks/pa1/tests");
@@ -102,8 +108,16 @@ void MainWindow::on_actionRun_triggered()
 
 		if(code_org.count() > 0)
 		{
-			process.at(executed_index)->setStandardInputFile(code_org_filenames[executed_index]);
-			process.at(executed_index)->start(ui->path_exe->text());
+			if(ui->pa5style->isChecked())
+			{
+				//process.at(executed_index)->start(ui->path_exe->text(), QStringList() << "-o" << "temp" << code_org_filenames[executed_index]);
+				process.at(executed_index)->start(ui->path_exe->text(), QStringList() << code_org_filenames[executed_index]);
+			}
+			else
+			{
+				process.at(executed_index)->setStandardInputFile(code_org_filenames[executed_index]);
+				process.at(executed_index)->start(ui->path_exe->text());
+			}
 			//process.at(executed_index)->waitForStarted();
 			//process.at(executed_index)->write(code_org.at(executed_index).toUtf8());
 
@@ -130,7 +144,25 @@ void MainWindow::on_actionRun_triggered()
 void MainWindow::on_processFinished(int res)
 {
 	Q_UNUSED(res);
-	QString stok = process.at(executed_index)->readAllStandardOutput();
+
+	QString stok = "";
+	if(ui->pa5style->isChecked())
+	{
+		// read file doesnt working ?
+		//QFile output("temp");
+		//if(output.open(QIODevice::ReadOnly))
+		//{
+		//	QByteArray text = output.readAll();
+		//	stok = QTextCodec::codecForUtfText(text)->toUnicode(text);
+		//	stok = "fuuu";
+		//	output.close();
+		//}
+		stok = process.at(executed_index)->readAllStandardOutput();
+	}
+	else
+	{
+		stok = process.at(executed_index)->readAllStandardOutput();
+	}
 	QString sterr = process.at(executed_index)->readAllStandardError();
 	code_test_res[executed_index] = stok;
 	code_test_err_res[executed_index] = sterr;
@@ -183,8 +215,17 @@ void MainWindow::on_processFinished(int res)
 	if(executed_index < code_org.count() - 1)
 	{
 		executed_index++;
-		process.at(executed_index)->setStandardInputFile(code_org_filenames[executed_index]);
-		process.at(executed_index)->start(ui->path_exe->text());
+
+		if(ui->pa5style->isChecked())
+		{
+			//process.at(executed_index)->start(ui->path_exe->text(), QStringList() << "-o" << "temp" << code_org_filenames[executed_index]);
+			process.at(executed_index)->start(ui->path_exe->text(), QStringList() << code_org_filenames[executed_index]);
+		}
+		else
+		{
+			process.at(executed_index)->setStandardInputFile(code_org_filenames[executed_index]);
+			process.at(executed_index)->start(ui->path_exe->text());
+		}
 	}
 	else
 	{
@@ -377,8 +418,12 @@ void MainWindow::on_process_custom_Finished(int res)
 
 void MainWindow::on_save_settings()
 {
+	if(block_settings_save)
+		return;
+
 	QSettings settings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()), QSettings::IniFormat);
 	settings.setValue("exe", ui->path_exe->text());
+	settings.setValue("pa5style", ui->pa5style->isChecked());
 	settings.setValue("tests", ui->path_tests->text());
 	settings.setValue("diff", ui->path_diff->text());
 	settings.sync();
@@ -391,5 +436,11 @@ void MainWindow::on_select_tests_dir_2_clicked()
 	if(!fileName.isNull())
 		ui->path_diff->setText(fileName);
 
+	on_save_settings();
+}
+
+void MainWindow::on_pa5style_stateChanged(int arg1)
+{
+	Q_UNUSED(arg1);
 	on_save_settings();
 }
