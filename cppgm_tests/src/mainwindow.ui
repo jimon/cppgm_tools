@@ -14,7 +14,7 @@
    <string>CPPGM testing</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_9">
+   <layout class="QHBoxLayout" name="horizontalLayout_9">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -47,6 +47,13 @@
          <widget class="QCheckBox" name="pa5style">
           <property name="text">
            <string>Is PA5 style invocation ?</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="pa8style">
+          <property name="text">
+           <string>Is PA8 style output ? (for pa8 use hex output to stdout)</string>
           </property>
          </widget>
         </item>
@@ -351,7 +358,7 @@
      <x>0</x>
      <y>0</y>
      <width>1064</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

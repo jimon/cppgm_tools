@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget * parent)
 		QSettings settings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()), QSettings::IniFormat);
 		ui->path_exe->setText(settings.value("exe").toString());
 		ui->pa5style->setChecked(settings.value("pa5style").toBool());
+		ui->pa8style->setChecked(settings.value("pa8style").toBool());
 		ui->path_tests->setText(settings.value("tests").toString());
 		ui->path_diff->setText(settings.value("diff").toString());
 
@@ -108,7 +109,19 @@ void MainWindow::on_actionRun_triggered()
 
 		if(code_org.count() > 0)
 		{
-			if(ui->pa5style->isChecked())
+			if(ui->pa8style->isChecked())
+			{
+				QStringList out_files;
+				for(size_t i = 0; i < code_org_filecounts[executed_index]; ++i)
+				{
+					QString file = code_org_filecounts[executed_index] == 1 ? code_org_filenames[executed_index] : QString("%1.%2").arg(code_org_filenames[executed_index]).arg(i + 1);
+					out_files << file;
+					//qDebug(qPrintable(file));
+				}
+
+				process.at(executed_index)->start(ui->path_exe->text(), out_files);
+			}
+			else if(ui->pa5style->isChecked())
 			{
 				//process.at(executed_index)->start(ui->path_exe->text(), QStringList() << "-o" << "temp" << code_org_filenames[executed_index]);
 				process.at(executed_index)->start(ui->path_exe->text(), QStringList() << code_org_filenames[executed_index]);
@@ -157,11 +170,17 @@ void MainWindow::on_processFinished(int res)
 		//	stok = "fuuu";
 		//	output.close();
 		//}
-		stok = process.at(executed_index)->readAllStandardOutput();
+		//if(ui->pa8style->isChecked())
+		//	stok = process.at(executed_index)->readAllStandardOutput().toHex();
+		//else
+			stok = process.at(executed_index)->readAllStandardOutput();
 	}
 	else
 	{
-		stok = process.at(executed_index)->readAllStandardOutput();
+		//if(ui->pa8style->isChecked())
+		//	stok = process.at(executed_index)->readAllStandardOutput().toHex();
+		//else
+			stok = process.at(executed_index)->readAllStandardOutput();
 	}
 	QString sterr = process.at(executed_index)->readAllStandardError();
 	code_test_res[executed_index] = stok;
@@ -221,7 +240,19 @@ void MainWindow::on_processFinished(int res)
 	{
 		executed_index++;
 
-		if(ui->pa5style->isChecked())
+		if(ui->pa8style->isChecked())
+		{
+			QStringList out_files;
+			for(size_t i = 0; i < code_org_filecounts[executed_index]; ++i)
+			{
+				QString file = code_org_filecounts[executed_index] == 1 ? code_org_filenames[executed_index] : QString("%1.%2").arg(code_org_filenames[executed_index]).arg(i + 1);
+				out_files << file;
+				//qDebug(qPrintable(file));
+			}
+
+			process.at(executed_index)->start(ui->path_exe->text(), out_files);
+		}
+		else if(ui->pa5style->isChecked())
 		{
 			//process.at(executed_index)->start(ui->path_exe->text(), QStringList() << "-o" << "temp" << code_org_filenames[executed_index]);
 			process.at(executed_index)->start(ui->path_exe->text(), QStringList() << code_org_filenames[executed_index]);
@@ -284,17 +315,24 @@ void MainWindow::on_analyze_new_options()
 
 	QFileInfoList list = dir.entryInfoList();
 
+	QMap<QString, uint32_t> files;
+	QMap<QString, uint32_t> filesId;
+
 	int count = 0, current = 0;
 
 	for(int i = 0; i < list.size(); ++i)
 	{
 		QFileInfo fileInfo = list.at(i);
 
-		if(fileInfo.suffix() == "t")
+		if(is_task_file(fileInfo.completeSuffix()))
 		{
-			count++;
+			if(files[fileInfo.baseName()] == 0)
+				filesId[fileInfo.baseName()] = count++;
+			files[fileInfo.baseName()]++;
 		}
 	}
+
+	count = files.size();
 
 	ui->cases_table->setColumnCount(2);
 	ui->cases_table->setRowCount(count);
@@ -303,49 +341,82 @@ void MainWindow::on_analyze_new_options()
 	{
 		QFileInfo fileInfo = list.at(i);
 
-		if(fileInfo.suffix() == "t")
+		if(is_task_file(fileInfo.completeSuffix()))
 		{
-			ui->cases_table->setItem(current, 0, new QTableWidgetItem(fileInfo.baseName()));
-			ui->cases_table->setItem(current, 1, new QTableWidgetItem("?"));
+			current = filesId[fileInfo.baseName()];
 
-			ui->cases_table->item(current, 1)->setBackgroundColor(QColor(255, 128, 128));
-			ui->cases_table->item(current, 1)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-
-			current++;
-
-			code_org_filenames.append(fileInfo.absoluteFilePath());
-
-			QFile file(fileInfo.absoluteFilePath());
-			if(file.open(QIODevice::ReadOnly | QIODevice::Text))
-				code_org.append(QString(file.readAll()));
-			else
-				code_org.append(QString("cant open %1").arg(fileInfo.absoluteFilePath()));
-
-			QString resFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref");
-			QFile file2(resFile);
-			if(file2.open(QIODevice::ReadOnly | QIODevice::Text))
-				code_org_res.append(QString(file2.readAll()));
-			else
-				code_org_res.append(QString("cant open %1").arg(resFile));
-
-			QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref.stderr");
-			QFile file3(errFile);
-			if(file3.open(QIODevice::ReadOnly | QIODevice::Text))
-				code_org_err_res.append(QString(file3.readAll()));
-			else
+			if(ui->cases_table->item(current, 0) == nullptr)
 			{
-				QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref.stdout");
-				QFile file3_2(errFile);
-				if(file3_2.open(QIODevice::ReadOnly | QIODevice::Text))
+				ui->cases_table->setItem(current, 0, new QTableWidgetItem(fileInfo.baseName()));
+				ui->cases_table->setItem(current, 1, new QTableWidgetItem("?"));
+
+				ui->cases_table->item(current, 1)->setBackgroundColor(QColor(255, 128, 128));
+				ui->cases_table->item(current, 1)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
+				if(files[fileInfo.baseName()] > 1)
+					code_org_filenames.append(QString("%1/%2").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()));
+				else
+					code_org_filenames.append(fileInfo.absoluteFilePath());
+				code_org_filecounts.append(1);
+
+				QFile file(fileInfo.absoluteFilePath());
+				if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+					code_org.append(QString(file.readAll()));
+				else
+					code_org.append(QString("cant open %1").arg(fileInfo.absoluteFilePath()));
+
+				if(files[fileInfo.baseName()] > 1)
+					code_org.back() = QString("--- test : %1\n%2").arg(fileInfo.fileName()).arg(code_org.back());
+
+				QString resFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()).arg(".ref");
+				QFile file2(resFile);
+				if(ui->pa8style->isChecked())
 				{
-					code_org_err_res.append(QString(file3_2.readAll()));
+					if(file2.open(QIODevice::ReadOnly))
+						code_org_res.append(QString(read_ref(file2.readAll())));
+					else
+						code_org_res.append(QString("cant open %1").arg(resFile));
 				}
 				else
-					code_org_err_res.append("reference stderr has not been specified");
-			}
+				{
+					if(file2.open(QIODevice::ReadOnly | QIODevice::Text))
+						code_org_res.append(QString(file2.readAll()));
+					else
+						code_org_res.append(QString("cant open %1").arg(resFile));
+				}
 
-			code_test_res.append("not executed yet");
-			code_test_err_res.append("not executed yet");
+				QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()).arg(".ref.stderr");
+				QFile file3(errFile);
+				if(file3.open(QIODevice::ReadOnly | QIODevice::Text))
+					code_org_err_res.append(QString(file3.readAll()));
+				else
+				{
+					QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()).arg(".ref.stdout");
+					QFile file3_2(errFile);
+					if(file3_2.open(QIODevice::ReadOnly | QIODevice::Text))
+					{
+						code_org_err_res.append(QString(file3_2.readAll()));
+					}
+					else
+						code_org_err_res.append("reference stderr has not been specified");
+				}
+
+				code_test_res.append("not executed yet");
+				code_test_err_res.append("not executed yet");
+			}
+			else
+			{
+				QString task_string;
+				QFile file(fileInfo.absoluteFilePath());
+				if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+					task_string = QString(file.readAll());
+				else
+					task_string = QString("cant open %1").arg(fileInfo.absoluteFilePath());
+
+				code_org.back() = QString("%1\n--- test : %2\n%3").arg(code_org.back()).arg(fileInfo.fileName()).arg(task_string);
+
+				code_org_filecounts[current]++;
+			}
 		}
 	}
 
@@ -400,13 +471,43 @@ void MainWindow::on_actionDiff_triggered()
 		else
 			return;
 
-		QFileInfo fileInfo(code_org_filenames.at(row));
+		if(ui->pa8style->isChecked())
+		{
+			QString fileBase = code_org_filecounts[row] == 1 ? code_org_filenames[row] : QString("%1.1").arg(code_org_filenames[row]);
+			QFileInfo fileInfo(fileBase);
 
-		QString org_path = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref");
+			QFile file_ref_org(QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()).arg(".ref"));
 
-		QProcess * diff = new QProcess(this);
-		diff->setWorkingDirectory(app);
-		diff->start(QString("%1 %2 diff_res.txt").arg(ui->path_diff->text()).arg(org_path));
+			QString ref_org;
+			if(file_ref_org.open(QIODevice::ReadOnly))
+				ref_org = read_ref(file_ref_org.readAll());
+			else
+				return;
+
+			QFile file_ref(QString("%1/diff_ref.txt").arg(app));
+
+			if(file_ref.open(QIODevice::WriteOnly))
+			{
+				file_ref.write(ref_org.toUtf8());
+				file_ref.close();
+			}
+			else
+				return;
+
+			QProcess * diff = new QProcess(this);
+			diff->setWorkingDirectory(app);
+			diff->start(QString("%1 diff_ref.txt diff_res.txt").arg(ui->path_diff->text()));
+		}
+		else
+		{
+			QFileInfo fileInfo(code_org_filenames.at(row));
+
+			QString org_path = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.completeBaseName()).arg(".ref");
+
+			QProcess * diff = new QProcess(this);
+			diff->setWorkingDirectory(app);
+			diff->start(QString("%1 %2 diff_res.txt").arg(ui->path_diff->text()).arg(org_path));
+		}
 	}
 }
 
@@ -438,6 +539,7 @@ void MainWindow::on_save_settings()
 	QSettings settings(QString("%1/config.ini").arg(QCoreApplication::applicationDirPath()), QSettings::IniFormat);
 	settings.setValue("exe", ui->path_exe->text());
 	settings.setValue("pa5style", ui->pa5style->isChecked());
+	settings.setValue("pa8style", ui->pa8style->isChecked());
 	settings.setValue("tests", ui->path_tests->text());
 	settings.setValue("diff", ui->path_diff->text());
 	settings.sync();
@@ -457,4 +559,40 @@ void MainWindow::on_pa5style_stateChanged(int arg1)
 {
 	Q_UNUSED(arg1);
 	on_save_settings();
+}
+
+void MainWindow::on_pa8style_stateChanged(int arg1)
+{
+	Q_UNUSED(arg1);
+	on_save_settings();
+}
+
+bool MainWindow::is_task_file(QString suffix) const
+{
+	if(ui->pa8style->isChecked())
+	{
+		QRegExp rx(R"(t\.\d+)");
+		return rx.exactMatch(suffix);
+	}
+	else
+	{
+		return suffix == "t";
+	}
+}
+
+QString MainWindow::read_ref(QByteArray data) const
+{
+	if(!ui->pa8style->isChecked())
+		return data;
+
+	QByteArray temp;
+
+	for(size_t i = 0; i < data.size(); ++i)
+	{
+		temp.append(QByteArray(1, data.at(i)).toHex());
+		if(i < data.size() - 1)
+			temp.append("\n");
+	}
+
+	return temp;
 }

@@ -39,6 +39,7 @@ private slots:
 	void on_save_settings();
 	void on_select_tests_dir_2_clicked();
 	void on_pa5style_stateChanged(int arg1);
+	void on_pa8style_stateChanged(int arg1);
 
 private:
 	Ui::MainWindow * ui;
@@ -50,10 +51,14 @@ private:
 	QList<QString> code_test_err_res;
 	QList<QProcess*> process;
 	QList<QString> code_org_filenames;
+	QList<uint32_t> code_org_filecounts;
 	QProcess * custom;
 	int executed_index;
 
 	bool block_settings_save;
+
+	bool is_task_file(QString suffix) const;
+	QString read_ref(QByteArray data) const;
 };
 
 #endif
