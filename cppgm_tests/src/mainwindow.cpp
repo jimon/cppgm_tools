@@ -218,6 +218,9 @@ void MainWindow::on_processFinished(int res)
 			my++;
 			ref++;
 		}
+
+		if((my != my_end) || (ref != ref_end))
+			match = false;
 	}
 
 	if(sterr.size() && code_org_err_res[executed_index].size())
