@@ -223,7 +223,9 @@ void MainWindow::on_processFinished(int res)
 			match = false;
 	}
 
-	if(sterr.size() && code_org_err_res[executed_index].size())
+	bool pa8errr = (ui->pa8style->isChecked() && code_org_is_err[executed_index]) || (!ui->pa8style->isChecked());
+
+	if(sterr.size() && code_org_err_res[executed_index].size() && pa8errr)
 	{
 		match = true;
 	}
@@ -376,24 +378,39 @@ void MainWindow::on_analyze_new_options()
 				if(ui->pa8style->isChecked())
 				{
 					if(file2.open(QIODevice::ReadOnly))
+					{
+						code_org_is_err.append(false);
 						code_org_res.append(QString(read_ref(file2.readAll())));
+					}
 					else
+					{
+						code_org_is_err.append(true);
 						code_org_res.append(QString("cant open %1").arg(resFile));
+					}
 				}
 				else
 				{
 					if(file2.open(QIODevice::ReadOnly | QIODevice::Text))
+					{
+						code_org_is_err.append(false);
 						code_org_res.append(QString(file2.readAll()));
+					}
 					else
+					{
+						code_org_is_err.append(true);
 						code_org_res.append(QString("cant open %1").arg(resFile));
+					}
 				}
 
 				QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()).arg(".ref.stderr");
 				QFile file3(errFile);
 				if(file3.open(QIODevice::ReadOnly | QIODevice::Text))
+				{
 					code_org_err_res.append(QString(file3.readAll()));
+				}
 				else
 				{
+					//code_org_is_err.append(false);
 					QString errFile = QString("%1/%2%3").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()).arg(".ref.stdout");
 					QFile file3_2(errFile);
 					if(file3_2.open(QIODevice::ReadOnly | QIODevice::Text))
