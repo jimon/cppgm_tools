@@ -18,3 +18,7 @@ required qt 5+
 ## file_separator
 
 small tool for big file separation to small ones, needed for big tests, like 300 in pa3
+
+## pe_file_posix
+
+small project to emulate posix subset for cppgm win64 target
