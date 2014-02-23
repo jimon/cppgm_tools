@@ -16,8 +16,7 @@ Probably it will be easy to expand it later. But I probably dont want to support
 
 ## PE file generation
 
-TODO  
-I will add PE file creation sample (similar to PA9 ELF sample) later. 
+win64\_pe\_sample.cpp contain simple pe creation example, note that there is no linker path, so you need to change sections source code if you will change something.
 
 ## MinGW ABI (from link above)
 
