@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>669</width>
+    <height>695</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>x64 opcode helper</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_9">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Prefix</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QCheckBox" name="prefix_0xf0">
+           <property name="text">
+            <string>0xF0: LOCK prefix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="prefix_0xf2">
+           <property name="text">
+            <string>0xF2: REPNE/REPNZ prefix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="prefix_0xf3">
+           <property name="text">
+            <string>0xF3: REP or REPE/REPZ prefix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="prefix_0x66">
+           <property name="text">
+            <string>0x66: Operand-size override prefix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="prefix_0x67">
+           <property name="text">
+            <string>0x67: Address-size override prefix</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>REX</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="rex">
+           <property name="text">
+            <string>REX</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="rex_w">
+           <property name="text">
+            <string>W : 64-bit operand size is used</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="rex_r">
+           <property name="text">
+            <string>R : ext to MODRM.reg field</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="rex_x">
+           <property name="text">
+            <string>X : ext to SIB.index field</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="rex_b">
+           <property name="text">
+            <string>B : ext to MODRM.rm/SIB.base field</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_10">
+      <item>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Opcode</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QCheckBox" name="opcode_0x0f">
+           <property name="text">
+            <string>0x0F sequence</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="opcode_0x38">
+           <property name="text">
+            <string>0x38 sequence</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="opcode_0x3a">
+           <property name="text">
+            <string>0x3A sequence</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLineEdit" name="opcode">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>50</string>
+             </property>
+             <property name="maxLength">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Opcode (HEX)</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>ModR/M</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QCheckBox" name="modrm">
+           <property name="text">
+            <string>ModR/M</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QComboBox" name="modrm_mod">
+             <item>
+              <property name="text">
+               <string>00</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>01</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>10</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>11</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>MODRM.mod</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QComboBox" name="modrm_reg">
+             <item>
+              <property name="text">
+               <string>000</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>001</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>010</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>011</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>100</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>101</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>110</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>111</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>MODRM.reg</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QComboBox" name="modrm_rm">
+             <item>
+              <property name="text">
+               <string>000</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>001</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>010</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>011</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>100</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>101</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>110</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>111</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>MODRM.rm</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string>SIB</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QCheckBox" name="sib">
+           <property name="text">
+            <string>SIB</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QComboBox" name="sib_scale">
+             <item>
+              <property name="text">
+               <string>00</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>01</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>10</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>11</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>SIB.scale</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QComboBox" name="sib_index">
+             <item>
+              <property name="text">
+               <string>000</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>001</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>010</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>011</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>100</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>101</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>110</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>111</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>SIB.index</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QComboBox" name="sib_base">
+             <item>
+              <property name="text">
+               <string>000</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>001</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>010</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>011</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>100</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>101</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>110</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>111</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>SIB.base</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="title">
+       <string>Immediate</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QComboBox" name="imm_size">
+           <item>
+            <property name="text">
+             <string>0 bytes</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1 byte</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2 bytes</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>4 bytes</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>8 bytes</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="imm"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>HEX</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_7">
+      <property name="title">
+       <string>Instuction</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QLineEdit" name="instuction"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

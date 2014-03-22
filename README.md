@@ -22,3 +22,7 @@ small tool for big file separation to small ones, needed for big tests, like 300
 ## pe_file_posix
 
 small project to emulate posix subset for cppgm win64 target
+
+## x64 opcode helper
+
+small tool that helps you to learn x64 opcode encoding
