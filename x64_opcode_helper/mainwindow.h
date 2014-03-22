@@ -41,8 +41,10 @@ private slots:
 	ON_ComB(sib_scale)
 	ON_ComB(sib_index)
 	ON_ComB(sib_base)
+	ON_ComB(disp_size)
 	ON_ComB(imm_size)
 	ON_LE(opcode)
+	ON_LE(disp)
 	ON_LE(imm)
 
 	void on_instuction_textChanged(const QString & arg1);

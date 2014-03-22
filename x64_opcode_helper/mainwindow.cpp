@@ -89,8 +89,13 @@ void MainWindow::build()
 	}
 
 	{
-		qulonglong byte8 = ui->imm->text().replace(" ", "").toULongLong(0, 16);
+		qulonglong byte8 = ui->disp->text().replace(" ", "").toULongLong(0, 16);
+		for(uint8_t i = 0; i < ui->disp_size->currentText().mid(0, 1).toInt(); ++i)
+			out += QString().sprintf("%02X", ((uint8_t*)&byte8)[i]) + " ";
+	}
 
+	{
+		qulonglong byte8 = ui->imm->text().replace(" ", "").toULongLong(0, 16);
 		for(uint8_t i = 0; i < ui->imm_size->currentText().mid(0, 1).toInt(); ++i)
 			out += QString().sprintf("%02X", ((uint8_t*)&byte8)[i]) + " ";
 	}
@@ -129,6 +134,9 @@ void MainWindow::disasm(const QString & opcode)
 	output += "instuction bytes :<br>";
 	for(int i = 0; i < bytes.size(); ++i)
 		output += QString().number(bytes[i], 16) + ((i + 1 < bytes.size()) ? " " : "<br>");
+
+	if(bytes.size() > 15)
+		output += "seems like a incorrect instuction, max size is 15 bytes<br>";
 
 	output += "decoded instuction :<br>";
 

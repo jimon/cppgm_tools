@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>669</width>
-    <height>695</height>
+    <height>778</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -533,6 +533,58 @@
        </spacer>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="title">
+       <string>Displacement</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QComboBox" name="disp_size">
+           <item>
+            <property name="text">
+             <string>0 bytes</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1 byte</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2 bytes</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>4 bytes</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>8 bytes</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="disp"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>HEX</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </item>
     <item>
      <widget class="QGroupBox" name="groupBox_6">
