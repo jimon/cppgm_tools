@@ -43,6 +43,9 @@ void MainWindow::build()
 	ui->sib_index->setEnabled(ui->sib->isChecked());
 	ui->sib_base->setEnabled(ui->sib->isChecked());
 
+	ui->imm_box->setEnabled(ui->disp_size->currentText().mid(0, 1) != "8");
+	ui->disp_box->setEnabled(ui->imm_size->currentText().mid(0, 1) != "8");
+
 	QString out;
 
 	if(ui->prefix_0xf0->isChecked()) out += "F0 ";
@@ -88,12 +91,14 @@ void MainWindow::build()
 		out += QString().sprintf("%02X", byte) + " ";
 	}
 
+	if(ui->disp_box->isEnabled())
 	{
 		qulonglong byte8 = ui->disp->text().replace(" ", "").toULongLong(0, 16);
 		for(uint8_t i = 0; i < ui->disp_size->currentText().mid(0, 1).toInt(); ++i)
 			out += QString().sprintf("%02X", ((uint8_t*)&byte8)[i]) + " ";
 	}
 
+	if(ui->imm_box->isEnabled())
 	{
 		qulonglong byte8 = ui->imm->text().replace(" ", "").toULongLong(0, 16);
 		for(uint8_t i = 0; i < ui->imm_size->currentText().mid(0, 1).toInt(); ++i)
