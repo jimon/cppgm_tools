@@ -21,15 +21,13 @@
  * ==================================================================== */
 void __bea_callspec__ G16_(PDISASM pMyDisasm)
 {
-    GV.REGOPCODE = ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 3) & 0x7;
+    GV.REGOPCODE = ((*((UInt8*)(UIntPtr) (GV.EIP_))) >> 3) & 0x7;
     if (GV.REGOPCODE == 0) {
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
         if (GV.MOD_!= 0x3) {
-            GV.MemDecoration = Arg2byte;
+            (*pMyDisasm).Argument2.ArgSize = 8;
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+CACHEABILITY_CONTROL;
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "prefetchNTA ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_PREFETCHNTA;
         }
         else {
             FailDecode(pMyDisasm);
@@ -38,11 +36,9 @@ void __bea_callspec__ G16_(PDISASM pMyDisasm)
     else if (GV.REGOPCODE == 1) {
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
         if (GV.MOD_!= 0x3) {
-            GV.MemDecoration = Arg2byte;
+            (*pMyDisasm).Argument2.ArgSize = 8;
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+CACHEABILITY_CONTROL;
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "prefetchT0 ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_PREFETCHT0;
         }
         else {
             FailDecode(pMyDisasm);
@@ -52,11 +48,9 @@ void __bea_callspec__ G16_(PDISASM pMyDisasm)
     else if (GV.REGOPCODE == 2) {
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
         if (GV.MOD_!= 0x3) {
-            GV.MemDecoration = Arg2byte;
+            (*pMyDisasm).Argument2.ArgSize = 8;
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+CACHEABILITY_CONTROL;
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "prefetchT1 ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_PREFETCHT1;
         }
         else {
             FailDecode(pMyDisasm);
@@ -66,11 +60,9 @@ void __bea_callspec__ G16_(PDISASM pMyDisasm)
     else if (GV.REGOPCODE == 3) {
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
         if (GV.MOD_!= 0x3) {
-            GV.MemDecoration = Arg2byte;
+            (*pMyDisasm).Argument2.ArgSize = 8;
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+CACHEABILITY_CONTROL;
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "prefetchT2 ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_PREFETCHT2;
         }
         else {
             FailDecode(pMyDisasm);
@@ -81,5 +73,5 @@ void __bea_callspec__ G16_(PDISASM pMyDisasm)
     else {
         FailDecode(pMyDisasm);
     }
-    GV.EIP_+= GV.DECALAGE_EIP+2;
+    GV.EIP_+= GV.DECALAGE_EIP;
 }

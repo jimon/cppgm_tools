@@ -20,170 +20,187 @@
 
 #define GV (*pMyDisasm).Reserved_
 
-/* Define constants to identify the position and type of decoration used in case of memory argument */
+/* BSCAN (Bit Scan) - BSF/BSR
+ * BTEST (Bit Test) - BT/BTS/BTR/BTC
+ */
+#define EFLAGS_MAP_DEF_A_B \
+    EFLAGS_DEF( EFLAGS_AAA,     {UN_, UN_, UN_, MO_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_AAD,     {UN_, MO_, MO_, UN_, MO_, UN_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_AAM,     {UN_, MO_, MO_, UN_, MO_, UN_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_AAS,     {UN_, UN_, UN_, MO_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ADC,     {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ADD,     {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_AND,     {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ARPL,    {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_BOUND,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_BSCAN,   {UN_, UN_, MO_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_BSWAP,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_BTEST,   {UN_, UN_, UN_, UN_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
 
-#define     Arg1byte        1
-#define     Arg1word        2
-#define     Arg1dword       3
-#define     Arg1qword       4
-#define     Arg1multibytes  5
-#define     Arg1tbyte       6
-#define     Arg1fword       7
-#define     Arg1dqword      8
+/* ccXX - for conditional instructions
+ *        (use cc as lowercase to make sure it never get conficted)
+ */
+#define EFLAGS_MAP_DEF_C_D \
+    EFLAGS_DEF( EFLAGS_CALL,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CBW,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccE,     {0  , 0  , TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccNE,    {0  , 0  , TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccA,     {0  , 0  , TE_, 0  , 0  , TE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccAE,    {0  , 0  , 0  , 0  , 0  , TE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccB,     {0  , 0  , 0  , 0  , 0  , TE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccBE,    {0  , 0  , TE_, 0  , 0  , TE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccO,     {TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccNO,    {TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccS,     {0  , TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccNS,    {0  , TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccP,     {0  , 0  , 0  , 0  , TE_, 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccNP,    {0  , 0  , 0  , 0  , TE_, 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccG,     {TE_, TE_, TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccGE,    {TE_, TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccL,     {TE_, TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ccLE,    {TE_, TE_, TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CLC,     {0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CLD,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CLI,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CLTS,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CMC,     {0  , 0  , 0  , 0  , 0  , MO_|TE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CMP,     {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CMPS,    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CMPXCHG, {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CMPXCHGG8B,{0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_COMSID,  {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_COMISS,  {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CPUID,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_CWD,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_DAA,     {UN_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_DAS,     {UN_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_DEC,     {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_DIV,     {UN_, UN_, UN_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0} ), \
 
-#define     Arg2byte        101
-#define     Arg2word        102
-#define     Arg2dword       103
-#define     Arg2qword       104
-#define     Arg2multibytes  105
-#define     Arg2tbyte       106
-#define     Arg2fword       107
-#define     Arg2dqword      108
+/* FCMP (Floating Point Compare) - FCOMI FCOMIP FUCMI FUCMIP
+ */
+#define EFLAGS_MAP_DEF_E_J \
+    EFLAGS_DEF( EFLAGS_ENTER,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ESC,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_FCMOV,   {0  , 0  , TE_, 0  , TE_, TE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_FCMP,    {0  , 0  , MO_, 0  , MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_HLT,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_IDIV,    {UN_, UN_, UN_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_IMUL,    {MO_, UN_, UN_, UN_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_IN,      {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_INC,     {MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_INS,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_INT,     {0  , 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , RE_, 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_INTO,    {TE_, 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , RE_, 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_INVD,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_INVLPG,  {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_UCOMSID, {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_UCOMISS, {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_IRET,    {PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, TE_, 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_JCXZ,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_JMP,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    
+/* LFAR (Load Far Pointer) - LDS LES LSS LFS LGS
+ * LxDT (Load Descriptor Table) - LGDT LIDT LLDT LMSW
+ * LOOPc (Loop Condition) - use ccXX
+ * MOVCRDR - MOV control, debug, test
+ */
+#define EFLAGS_MAP_DEF_L_N \
+    EFLAGS_DEF( EFLAGS_LAHF,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LAR,     {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LFAR,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LEA,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LEAVE,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LxDT,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LOCK,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LODS,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LOOP,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LSL,     {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_LTR,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_MONITOR, {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_MWAIT,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_MOV,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_MOVCRDR, {UN_, UN_, UN_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_MOVS,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_MOVSX,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_MUL,     {MO_, UN_, UN_, UN_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_NEG,     {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_NOP,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_NOT,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
 
-EFLStruct EFLAGS_TABLE[] = {
-    {UN_, UN_, UN_, MO_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 0-AAA */
-    {UN_, MO_, MO_, UN_, MO_, UN_, 0  , 0  , 0  , 0  , 0, 0},  /* 1-AAD */
-    {UN_, MO_, MO_, UN_, MO_, UN_, 0  , 0  , 0  , 0  , 0, 0},  /* 2-AAM */
-    {UN_, UN_, UN_, MO_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 3-AAS */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 4-ADC */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 5-ADD */
-    {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0},  /* 6-AND */
-    {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 7-ARPL */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 8-BOUND */
-    {UN_, UN_, MO_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0},  /* 9-BSF/BSR */
+/* POP - POP POPA
+ * PUSH - PUSH PUSHA PUSHF
+ * REP - REP REPE REPNE
+ * ROTC1 (Rotate Carry 1 bit) - RCL RCR 1
+ * ROTC (Rotate Carry n bit) - RCL RCR
+ * ROT1 (Rotate 1 bit) - ROL ROR 1
+ * ROT (Rotate n bit) - ROL ROR
+ */
+#define EFLAGS_MAP_DEF_O_R \
+    EFLAGS_DEF( EFLAGS_OR,      {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_OUT,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_OUTS,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_POP,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_POPCNT,  {RE_, RE_, MO_, RE_, RE_, RE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_POPF,    {PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_PUSH,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_PUSHF,   {SC_, SC_, SC_, SC_, SC_, SC_, SC_, SC_, SC_, SC_, 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ROTC1,   {MO_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ROTC,    {UN_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_RDMSR,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_RDPMC,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_RDTSC,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_REP,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_RET,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ROT1,    {MO_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_ROT,     {UN_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_RSM,     {MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, 0} ), \
 
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 10-BSWAP */
-    {UN_, UN_, UN_, UN_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 11-BT/BTS/BTR/BTC */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 12-CALL */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 13-CBW */
-    {0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , 0  , 0  , 0, 0},  /* 14-CLC */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0, 0},  /* 15-CLD */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , 0, 0},  /* 16-CLI */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 17-CLTS */
-    {0  , 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 18-CMC */
-    {TE_, TE_, TE_, 0  , TE_, TE_, 0  , 0  , 0  , 0  , 0, 0},  /* 19-CMOVcc */
+/* SHIFT1 (Shift 1 bit) - SAL SAR SHL SHR 1
+ * SHIFT (Shift n bit) - SAL SAR SHL SHR
+ * SxDT (Store Descriptor Table) - SGDT SIDT SLDT SMSW
+ * SHIFTDP (Shift Double Precision) - SHLD SHRD
+ * SETcc - use ccXX
+ * VERR (Verify Segment) - VERR VERW
+ */
+#define EFLAGS_MAP_DEF_S_Z \
+    EFLAGS_DEF( EFLAGS_SAHF,    {0  , PR_, PR_, PR_, PR_, PR_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_SHIFT1,  {MO_, MO_, MO_, 0  , MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_SHIFT,   {0  , MO_, MO_, 0  , MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_SBB,     {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_SCAS,    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_SxDT,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_SHIFTDP, {UN_, MO_, MO_, UN_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_STC,     {0  , 0  , 0  , 0  , 0  , SE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_STD,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , SE_, 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_STI,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , SE_, 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_STOS,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_STR,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_SUB,     {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_TEST,    {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_UD2,     {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_VERR,    {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_WAIT,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_WBINVD,  {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_WRMSR,   {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_XADD,    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_XCHG,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_XLAT,    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0} ), \
+    EFLAGS_DEF( EFLAGS_XOR,     {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0} ), \
 
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 20-CMP */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 21-CMPS */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 22-CMPXCHG */
-    {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 23-CMPXCHGG8B */
-    {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 24-COMSID */
-    {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 25-COMISS */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 26-CPUID */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 27-CWD */
-    {UN_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 28-DAA */
-    {UN_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 29-DAS */
+#define EFLAGS_MAP_DEF EFLAGS_MAP_DEF_A_B EFLAGS_MAP_DEF_C_D \
+    EFLAGS_MAP_DEF_E_J EFLAGS_MAP_DEF_L_N EFLAGS_MAP_DEF_O_R EFLAGS_MAP_DEF_S_Z
+    
+#define EFLAGS_DEF(id, ...) id
+enum EFLAGS_ENUM { EFLAGS_MAP_DEF };
+#undef EFLAGS_DEF
+#define EFLAGS_DEF(id, ...) __VA_ARGS__
+static const EFLStruct EFLAGS_TABLE[] = { EFLAGS_MAP_DEF };
 
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 30-DEC */
-    {UN_, UN_, UN_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0},  /* 31-DIV */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 32-ENTER */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 33-ESC */
-    {0  , 0  , TE_, 0  , TE_, TE_, 0  , 0  , 0  , 0  , 0, 0},  /* 34-FCMOV */
-    {0  , 0  , MO_, 0  , MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 35-FCOMI FCOMIP FUCMI FUCMIP */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 36-HLT */
-    {UN_, UN_, UN_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0},  /* 37-IDIV */
-    {MO_, UN_, UN_, UN_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 38-IMUL */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 39-IN */
-
-    {MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 40-INC */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0},  /* 41-INS */
-    {0  , 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , RE_, 0, 0},  /* 42-INT */
-    {TE_, 0  , 0  , 0  , 0  , 0  , RE_, 0  , 0  , RE_, 0, 0},  /* 43-INTO */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 44-INVD */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 45-INVLPG */
-    {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 46-UCOMSID */
-    {RE_, RE_, MO_, RE_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 47-UCOMISS */
-    {PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, TE_, 0, 0},  /* 48-IRET */
-    {TE_, TE_, TE_, 0  , TE_, TE_, 0  , 0  , 0  , 0  , 0, 0},  /* 49-Jcc */
-
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 50-JCXZ */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 51-JMP */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 52-LAHF */
-    {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 53-LAR */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 54-LDS LES LSS LFS LGS */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 55-LEA */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 56-LEAVE */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 57-LGDT LIDT LLDT LMSW */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 58-LOCK */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0},  /* 59-LODS */
-
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 60-LOOP */
-    {0  , 0  , TE_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 61-LOOPE LOOPNE */
-    {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 62-LSL */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 63-LTR */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 64-MONITOR */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 65-MWAIT */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 66-MOV */
-    {UN_, UN_, UN_, UN_, UN_, UN_, 0  , 0  , 0  , 0  , 0, 0},  /* 67-MOV control, debug, test */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0},  /* 68-MOVS */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 69-MOVSX MOVZX */
-
-    {MO_, UN_, UN_, UN_, UN_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 70-MUL */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 71-NEG */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 72-NOP */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 73-NOT */
-    {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0},  /* 74-OR */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 75-OUT */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , TE_, 0  , 0, 0},  /* 76-OUTS */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 77-POP POPA */
-    {PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, PR_, 0, 0},  /* 78-POPF */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 79-PUSH PUSHA PUSHF */
-
-    {MO_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 80-RCL RCR 1 */
-    {UN_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 81-RCL RCR */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 82-RDMSR */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 83-RDPMC */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 84-RDTSC */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 85-REP REPE REPNE */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 86-RET */
-    {MO_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 87-ROL ROR 1 */
-    {UN_, 0  , 0  , 0  , 0  , MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 88-ROL ROR */
-    {MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, MO_, 0},  /* 89-RSM */
-
-    {0  , PR_, PR_, PR_, PR_, PR_, 0  , 0  , 0  , 0  , 0, 0},  /* 90-SAHF */
-    {MO_, MO_, MO_, 0  , MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 91-SAL SAR SHL SHR 1 */
-    {0  , MO_, MO_, 0  , MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 92-SAL SAR SHL SHR */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 93-SBB */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 94-SCAS */
-    {TE_, TE_, TE_, 0  , TE_, TE_, 0  , 0  , 0  , 0  , 0, 0},  /* 95-SETcc */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 96-SGDT SIDT SLDT SMSW */
-    {UN_, MO_, MO_, UN_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 97-SHLD SHRD */
-    {0  , 0  , 0  , 0  , 0  , SE_, 0  , 0  , 0  , 0  , 0, 0},  /* 98-STC */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , SE_, 0  , 0, 0},  /* 99-STD */
-
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , SE_, 0  , 0  , 0, 0},  /* 100-STI */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 101-STOS */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 102-STR */
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 103-SUB */
-    {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0},  /* 104-TEST */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 105-UD2 */
-    {0  , 0  , MO_, 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 106-VERR VERRW */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 107-WAIT */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 108-WBINVD */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 109-WRMSR */
-
-    {MO_, MO_, MO_, MO_, MO_, MO_, 0  , 0  , 0  , 0  , 0, 0},  /* 110-XADD */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 111-XCHG */
-    {0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0, 0},  /* 112-XLAT */
-    {RE_, MO_, MO_, UN_, MO_, RE_, 0  , 0  , 0  , 0  , 0, 0},  /* 113-XOR */
-
-    {RE_, RE_, MO_, RE_, RE_, RE_, 0  , 0  , 0  , 0  , 0, 0},  /* 114-POPCNT */
-
-    {TE_, TE_, TE_, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0, 0}, /*115 -jg jnle jng jle http://ref.x86asm.net/coder.html */
-    {TE_, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0, 0}, /*116 -jo jno http://ref.x86asm.net/coder.html */
-    {0 , 0 , 0 , 0 , 0 , TE_, 0 , 0 , 0 , 0 , 0, 0}, /*117 -jc jnc jb jnb jnae jae http://ref.x86asm.net/coder.html */
-    {0 , 0 , TE_, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0, 0}, /*118 -jz jnz je jne http://ref.x86asm.net/coder.html */
-    {0 , 0 , TE_, 0 , 0 , TE_, 0 , 0 , 0 , 0 , 0, 0}, /*119 -jbe jnbe jna ja http://ref.x86asm.net/coder.html */
-
-    {0 , TE_, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0, 0}, /* 120 - js jns http://ref.x86asm.net/coder.html */
-    {0 , 0 , 0 , 0 , TE_, 0 , 0 , 0 , 0 , 0 , 0, 0}, /* 121 - jp jpe jnp jpo http://ref.x86asm.net/coder.html */
-    {TE_, TE_, 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0, 0} /* 122 - jl jnge jnl jge http://ref.x86asm.net/coder.html */
-
-    };
 /* =====================================================
  * To make a tabulation between mnemonic and first argument
  * ===================================================== */
-char space_tab[11][16] = {
+static const char space_tab[11][16] = {
     " ",
     "  ",
     "   ",
@@ -200,7 +217,7 @@ char space_tab[11][16] = {
 /* =====================================================
  * Segment registers
  * ===================================================== */
-char SegmentRegs[7][4] = {
+static const char SegmentRegs[7][4] = {
     "??:",      /* +0 */
     "es:",      /* +1 */
     "ds:",      /* +2 */
@@ -212,7 +229,7 @@ char SegmentRegs[7][4] = {
 /* =====================================================
  * AT&T Suffixes
  * ===================================================== */
-char ATSuffixes[8][4] = {
+static const char ATSuffixes[8][4] = {
     "b ",     /* GV.MemDecoration == 1 */
     "w ",     /* GV.MemDecoration == 2 */
     "l ",     /* GV.MemDecoration == 3 */
@@ -227,7 +244,7 @@ char ATSuffixes[8][4] = {
  * MASM Prefixes for MemoryType
  * ===================================================== */
 
-char MasmPrefixes[8][16] = {
+static const char MasmPrefixes[8][16] = {
     "byte ptr ",        /* GV.MemDecoration == 1 */
     "word ptr ",        /* GV.MemDecoration == 2 */
     "dword ptr ",       /* GV.MemDecoration == 3 */
@@ -241,10 +258,10 @@ char MasmPrefixes[8][16] = {
 /* =====================================================
  * NASM Prefixes for MemoryType
  * ===================================================== */
-char NasmPrefixes[8][8] = {
+static const char NasmPrefixes[8][8] = {
     "byte ",      /* GV.MemDecoration == 1 */
     "word ",      /* GV.MemDecoration == 2 */
-    " ",     /* GV.MemDecoration == 3 */
+    "dword ",     /* GV.MemDecoration == 3 */
     "qword ",     /* GV.MemDecoration == 4 */
     " ",          /* GV.MemDecoration == 5 (multibytes) */
     "tword ",     /* GV.MemDecoration == 6 */
@@ -257,7 +274,7 @@ char NasmPrefixes[8][8] = {
 /* =====================================================
  * GOASM Prefixes for MemoryType
  * ===================================================== */
-char GoAsmPrefixes[8][4] = {
+static const char GoAsmPrefixes[8][4] = {
     "b ",     /* GV.MemDecoration == 1 */
     "w ",     /* GV.MemDecoration == 2 */
     "d ",     /* GV.MemDecoration == 3 */
@@ -272,7 +289,7 @@ char GoAsmPrefixes[8][4] = {
 /* =====================================================
  * Segment registers
  * ===================================================== */
-char RegistersSEG[16][8] = {
+static const char RegistersSEG[8][8] = {
     "es",      /* +0 */
     "cs",      /* +1 */
     "ss",      /* +2 */
@@ -281,20 +298,12 @@ char RegistersSEG[16][8] = {
     "gs",      /* +5 */
     "seg?",
     "seg?",
-    "seg?",
-    "seg?",
-    "seg?",
-    "seg?",
-    "seg?",
-    "seg?",
-    "seg?",
-    "seg?",
 };
 
 /* =====================================================
  * FPU Registers
  * ===================================================== */
-char RegistersFPU_Masm[8][8] = {
+static const char RegistersFPU_Masm[8][8] = {
     "st(0)",      /* +0 */
     "st(1)",      /* +1 */
     "st(2)",      /* +2 */
@@ -305,7 +314,7 @@ char RegistersFPU_Masm[8][8] = {
     "st(7)",      /* +7 */
 };
 
-char RegistersFPU_Nasm[8][8] = {
+static const char RegistersFPU_Nasm[8][8] = {
     "st0",      /* +0 */
     "st1",      /* +1 */
     "st2",      /* +2 */
@@ -319,7 +328,7 @@ char RegistersFPU_Nasm[8][8] = {
 /* =====================================================
  * debug registers
  * ===================================================== */
-char RegistersDR[16][8] = {
+static const char RegistersDR[16][8] = {
     "dr0",      /* +0 */
     "dr1",      /* +1 */
     "dr2",      /* +2 */
@@ -341,7 +350,7 @@ char RegistersDR[16][8] = {
 /* =====================================================
  * debug registers-AT&T syntax
  * ===================================================== */
-char RegistersDR_AT[16][8] = {
+static const char RegistersDR_AT[16][8] = {
     "db0",      /* +0 */
     "db1",      /* +1 */
     "db2",      /* +2 */
@@ -364,7 +373,7 @@ char RegistersDR_AT[16][8] = {
 /* =====================================================
  * control registers
  * ===================================================== */
-char RegistersCR[16][8] = {
+static const char RegistersCR[16][8] = {
     "cr0",      /* +0 */
     "cr1",      /* +1 */
     "cr2",      /* +2 */
@@ -388,7 +397,7 @@ char RegistersCR[16][8] = {
 /* =====================================================
  * 64 bits registers
  * ===================================================== */
-char Registers64Bits[16][4] = {
+static const char Registers64Bits[16][4] = {
     "rax",      /* +0 */
     "rcx",      /* +1 */
     "rdx",      /* +2 */
@@ -410,7 +419,7 @@ char Registers64Bits[16][4] = {
 /* =====================================================
  * 32 bits registers
  * ===================================================== */
-char Registers32Bits[16][8] = {
+static const char Registers32Bits[16][8] = {
     "eax",
     "ecx",
     "edx",
@@ -432,7 +441,7 @@ char Registers32Bits[16][8] = {
 /* =====================================================
  * 16 bits registers
  * ===================================================== */
-char Registers16Bits[16][8] = {
+static const char Registers16Bits[16][8] = {
     "ax",
     "cx",
     "dx",
@@ -453,7 +462,7 @@ char Registers16Bits[16][8] = {
 /* =====================================================
  * 8 bits registers
  * ===================================================== */
-char Registers8BitsLegacy[8][4] = {
+static const char Registers8BitsLegacy[8][4] = {
     "al",
     "cl",
     "dl",
@@ -464,7 +473,14 @@ char Registers8BitsLegacy[8][4] = {
     "bh",
 };
 
-Int32 REGS8BITS[] = {
+static const char Registers8BitsHigh[4][4] = {
+    "ah",
+    "ch",
+    "dh",
+    "bh",
+};
+
+static const Int32 REGS8BITS[] = {
     REG0,
     REG1,
     REG2,
@@ -478,7 +494,7 @@ Int32 REGS8BITS[] = {
 /* =====================================================
  * 8 bits registers
  * ===================================================== */
-char Registers8Bits[16][8] = {
+static const char Registers8Bits[16][8] = {
     "al",
     "cl",
     "dl",
@@ -487,19 +503,19 @@ char Registers8Bits[16][8] = {
     "bpl",
     "sil",
     "dil",
-    "r8L",
-    "r9L",
-    "r10L",
-    "r11L",
-    "r12L",
-    "r13L",
-    "r14L",
-    "r15L",
+    "r8b",
+    "r9b",
+    "r10b",
+    "r11b",
+    "r12b",
+    "r13b",
+    "r14b",
+    "r15b",
 };
 /* =====================================================
  * MMX Registers
  * ===================================================== */
-char RegistersMMX[8][4] = {
+static const char RegistersMMX[8][4] = {
     "mm0",
     "mm1",
     "mm2",
@@ -513,7 +529,7 @@ char RegistersMMX[8][4] = {
 /* =====================================================
  * SSE Registers
  * ===================================================== */
-char RegistersSSE[16][8] = {
+static const char RegistersSSE[16][8] = {
     "xmm0",
     "xmm1",
     "xmm2",
@@ -532,7 +548,7 @@ char RegistersSSE[16][8] = {
     "xmm15",    /* SSE3, SSSE3, SSE4 */
 };
 
-Int32 REGS[] = {
+static const Int32 REGS[] = {
     REG0,        /* REG0 */
     REG1,        /* REG1 */
     REG2,        /* REG2 */
@@ -551,10 +567,7 @@ Int32 REGS[] = {
     REG15,     /* REG15 */
 };
 
-char BXSI_[] = "bx+si";
-char BXDI_[] = "bx+di";
-char BPSI_[] = "bp+si";
-char BPDI_[] = "bp+di";
+#define REGVAL(v)   (1<<(v))
 
-
+const__ char MNEMONICS[NUM_MNEMONIC][16] = { MNEMONIC_MAP_DEF };
 

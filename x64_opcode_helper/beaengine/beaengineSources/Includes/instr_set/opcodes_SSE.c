@@ -22,51 +22,34 @@
 void __bea_callspec__ addps_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "addsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ADDSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "addss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ADDSS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "addpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ADDPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "addps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ADDPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -76,30 +59,21 @@ void __bea_callspec__ addps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ addsubpd_(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+SIMD_FP_PACKED;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "addsubps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ADDSUBPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+SIMD_FP_PACKED;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "addsubpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ADDSUBPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -113,27 +87,18 @@ void __bea_callspec__ addsubpd_(PDISASM pMyDisasm)
 void __bea_callspec__ andnps_VW(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "andnpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ANDNPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "andnps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ANDNPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -144,27 +109,18 @@ void __bea_callspec__ andnps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ andps_VW(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "andpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ANDPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "andps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ANDPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -175,34 +131,22 @@ void __bea_callspec__ andps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ blendpd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_BLENDING_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "blendpd ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_BLENDPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -212,28 +156,18 @@ void __bea_callspec__ blendpd_(PDISASM pMyDisasm)
 void __bea_callspec__ blendps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_BLENDING_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "blendps ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_BLENDPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -247,22 +181,18 @@ void __bea_callspec__ blendps_(PDISASM pMyDisasm)
 void __bea_callspec__ blendvpd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_BLENDING_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "blendvpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_BLENDVPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        (*pMyDisasm).Argument3.ArgType = IMPLICIT_ARG+REGISTER_TYPE+SSE_REG+REG0;
+        (*pMyDisasm).Argument3.ArgSize = 128;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -272,17 +202,14 @@ void __bea_callspec__ blendvpd_(PDISASM pMyDisasm)
 void __bea_callspec__ blendvps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_BLENDING_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "blendvps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_BLENDVPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        (*pMyDisasm).Argument3.ArgType = IMPLICIT_ARG+REGISTER_TYPE+SSE_REG+REG0;
+        (*pMyDisasm).Argument3.ArgSize = 128;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -295,66 +222,39 @@ void __bea_callspec__ blendvps_(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ cmpps_VW(PDISASM pMyDisasm)
 {
-
     /* ========= 0xf2 */
     GV.ImmediatSize = 8;
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cmpsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CMPSD;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========== 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cmpss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CMPSS;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cmppd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CMPPD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cmpps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CMPPS;
+        XMMregXMMrm(pMyDisasm);
     }
-    (*pMyDisasm).Argument1.AccessMode = READ;
-    GV.EIP_++;
-    if (!Security(0, pMyDisasm)) return;
-    GV.third_arg = 1;
-    (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-    #ifndef BEA_LIGHT_DISASSEMBLY
-       (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-    #endif
+    (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+    if (!Security1(pMyDisasm)) return;
+    (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
     (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
     (*pMyDisasm).Argument3.ArgSize = 8;
-
+    GV.EIP_++;
 }
 
 
@@ -364,38 +264,26 @@ void __bea_callspec__ cmpps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ crc32_GvEb(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+ACCELERATOR_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "crc32 ");
-        #endif
-        if (GV.OperandSize == 64) {
-            GV.MemDecoration = Arg2byte;
-            GV.OperandSize = 8;
+        (*pMyDisasm).Instruction.Mnemonic = I_CRC32;
+        if ((*pMyDisasm).Instruction.OperandSize == 64) {
+            (*pMyDisasm).Argument2.ArgSize = 8;
+            (*pMyDisasm).Instruction.OperandSize = 8;
             MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.OperandSize = 64;
-        }
-        else if (GV.OperandSize == 32) {
-            GV.MemDecoration = Arg2byte;
-            GV.OperandSize = 8;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.OperandSize = 32;
+            (*pMyDisasm).Instruction.OperandSize = 64;
         }
         else {
-            GV.MemDecoration = Arg2byte;
+            (*pMyDisasm).Argument2.ArgSize = 8;
+            (*pMyDisasm).Instruction.OperandSize = 8;
             MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
+            (*pMyDisasm).Instruction.OperandSize = 32;
         }
 
-        if (GV.OperandSize == 16) {
-            GV.OperandSize = 32;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.OperandSize = 16;
-        }
-        else {
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        }
-        GV.EIP_ += GV.DECALAGE_EIP+2;
+        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        GV.EIP_ += GV.DECALAGE_EIP;
     }
     else {
         FailDecode(pMyDisasm);
@@ -408,33 +296,24 @@ void __bea_callspec__ crc32_GvEb(PDISASM pMyDisasm)
 void __bea_callspec__ crc32_GvEv(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+ACCELERATOR_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "crc32 ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_CRC32;
 
-        if (GV.OperandSize == 64) {
-            GV.MemDecoration = Arg2qword;
-        }
-        else if (GV.OperandSize == 32) {
-            GV.MemDecoration = Arg2dword;
-        }
-        else {
-            GV.MemDecoration = Arg2word;
-        }
+        (*pMyDisasm).Argument2.ArgSize = (*pMyDisasm).Instruction.OperandSize;
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
 
-        if (GV.OperandSize == 16) {
-            GV.OperandSize = 32;
+        if ((*pMyDisasm).Instruction.OperandSize == 16) {
+            (*pMyDisasm).Instruction.OperandSize = 32;
             Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.OperandSize = 16;
+            (*pMyDisasm).Instruction.OperandSize = 16;
         }
         else {
             Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
         }
-        GV.EIP_ += GV.DECALAGE_EIP+2;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        GV.EIP_ += GV.DECALAGE_EIP;
     }
     else {
         FailDecode(pMyDisasm);
@@ -448,27 +327,18 @@ void __bea_callspec__ crc32_GvEv(PDISASM pMyDisasm)
 void __bea_callspec__ comiss_VW(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "comisd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_COMISD;
+        (*pMyDisasm).Argument1.AccessMode = READ;
+        XMMregXMMrm64(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "comiss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_COMISS;
+        (*pMyDisasm).Argument1.AccessMode = READ;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -478,51 +348,30 @@ void __bea_callspec__ comiss_VW(PDISASM pMyDisasm)
 void __bea_callspec__ cvtps2pd_(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtsd2ss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTSD2SS;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========== 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtss2sd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTSS2SD;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtpd2ps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPD2PS;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtps2pd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPS2PD;
+        XMMregXMMrm64(pMyDisasm);
     }
 }
 
@@ -533,39 +382,23 @@ void __bea_callspec__ cvtps2pd_(PDISASM pMyDisasm)
 void __bea_callspec__ cvtdq2ps_(PDISASM pMyDisasm)
 {
     /* ========== 0xf3 */
-    if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvttps2dq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTTPS2DQ;
+        XMMregXMMrm(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtps2dq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPS2DQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtdq2ps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTDQ2PS;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -576,83 +409,36 @@ void __bea_callspec__ cvtdq2ps_(PDISASM pMyDisasm)
 void __bea_callspec__ cvtpi2ps_(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtsi2sd ");
-        #endif
-        if (GV.REX.W_ == 1) {
-            GV.MemDecoration = Arg2qword;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 1;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
-        else {
-            GV.MemDecoration = Arg2dword;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 1;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTSI2SD;
+        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = (*pMyDisasm).Instruction.OperandSize;
+        RegSSE_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
     /* ========== 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtsi2ss ");
-        #endif
-        if (GV.REX.W_ == 1) {
-            GV.MemDecoration = Arg2qword;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 1;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
-        else {
-            GV.MemDecoration = Arg2dword;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 1;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTSI2SS;
+        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = (*pMyDisasm).Instruction.OperandSize;
+        RegSSE_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtpi2pd ");
-        #endif
-        GV.MemDecoration = Arg2qword;
-        GV.MMX_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.MMX_ = 0;
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPI2PD;
+        XMMregMMrm(pMyDisasm);
     }
     else {
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtpi2ps ");
-        #endif
-        GV.MemDecoration = Arg2qword;
-        GV.MMX_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.MMX_ = 0;
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPI2PS;
+        XMMregMMrm(pMyDisasm);
     }
 }
 
@@ -663,83 +449,39 @@ void __bea_callspec__ cvtpi2ps_(PDISASM pMyDisasm)
 void __bea_callspec__ cvtps2pi_(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtsd2si ");
-        #endif
-        if (GV.REX.W_ == 1) {
-            GV.MemDecoration = Arg2qword;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 0;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
-        else {
-            GV.MemDecoration = Arg2qword;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 0;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTSD2SI;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 64;
+        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
     /* ========== 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtss2si ");
-        #endif
-        if (GV.REX.W_ == 1) {
-            GV.MemDecoration = Arg2dword;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 0;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
-        else {
-            GV.MemDecoration = Arg2dword;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 0;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTSS2SI;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 32;
+        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtpd2pi ");
-        #endif
-        GV.MemDecoration = Arg2dqword;
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.MMX_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.MMX_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPD2PI;
+        MMregXMMrm(pMyDisasm);
     }
     else {
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtps2pi ");
-        #endif
-        GV.MemDecoration = Arg2qword;
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.MMX_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.MMX_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPS2PI;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 64;
+        RegMMX_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
 }
 
@@ -750,73 +492,40 @@ void __bea_callspec__ cvtps2pi_(PDISASM pMyDisasm)
 void __bea_callspec__ cvttps2pi_(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvttsd2si ");
-        #endif
-        if (GV.REX.W_ == 1) {
-            GV.MemDecoration = Arg2qword;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 0;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
-        else {
-            GV.MemDecoration = Arg2qword;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-            GV.SSE_ = 0;
-            Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.EIP_+= GV.DECALAGE_EIP+2;
-        }
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTTSD2SI;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 64;
+        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
     /* ========== 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvttss2si ");
-        #endif
-        GV.MemDecoration = Arg2dword;
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTTSS2SI;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 32;
         Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvttpd2pi ");
-        #endif
-        GV.MemDecoration = Arg2dqword;
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.MMX_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.MMX_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTTPD2PI;
+        MMregXMMrm(pMyDisasm);
     }
     else {
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvttps2pi ");
-        #endif
-        GV.MemDecoration = Arg2qword;
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.MMX_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.MMX_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTTPS2PI;
+        (*pMyDisasm).Argument2.ArgSize = 64;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 64;
+        RegMMX_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
 }
 
@@ -827,41 +536,26 @@ void __bea_callspec__ cvttps2pi_(PDISASM pMyDisasm)
 void __bea_callspec__ cvtpd2dq_(PDISASM pMyDisasm)
 {
     /* ========== 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtpd2dq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTPD2DQ;
+        XMMregXMMrm(pMyDisasm);
     }
     /* ========== 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvtdq2pd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTDQ2PD;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "cvttpd2dq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_CVTTPD2DQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -875,29 +569,18 @@ void __bea_callspec__ cvtpd2dq_(PDISASM pMyDisasm)
 void __bea_callspec__ dppd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+DOT_PRODUCT;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "dppd ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_DPPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -911,29 +594,18 @@ void __bea_callspec__ dppd_(PDISASM pMyDisasm)
 void __bea_callspec__ dpps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+DOT_PRODUCT;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "dpps ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_DPPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -948,51 +620,34 @@ void __bea_callspec__ dpps_(PDISASM pMyDisasm)
 void __bea_callspec__ divps_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "divsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_DIVSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "divss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_DIVSS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "divpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_DIVPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "divps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_DIVPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1003,36 +658,24 @@ void __bea_callspec__ divps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ extractps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg1dword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+INSERTION_EXTRACTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "extractps ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_EXTRACTPS;
         GV.ImmediatSize = 8;
         MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        (*pMyDisasm).Argument1.ArgSize = 32;
+        RegSSE_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -1041,29 +684,19 @@ void __bea_callspec__ extractps_(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ haddpd_VW(PDISASM pMyDisasm)
 {
-
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+SIMD_FP_HORIZONTAL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "haddpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_HADDPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+SIMD_FP_HORIZONTAL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "haddps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_HADDPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1073,29 +706,19 @@ void __bea_callspec__ haddpd_VW(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ hsubpd_VW(PDISASM pMyDisasm)
 {
-
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+SIMD_FP_HORIZONTAL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "hsubpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_HSUBPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+SIMD_FP_HORIZONTAL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "hsubps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_HSUBPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1106,45 +729,21 @@ void __bea_callspec__ hsubpd_VW(PDISASM pMyDisasm)
 void __bea_callspec__ insertps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+INSERTION_EXTRACTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "insertps ");
-        #endif
-        GV.SSE_ = 1;
-        GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 6) & 0x3;
-        if (GV.MOD_== 0x3) {
-            GV.MemDecoration = Arg2qword;
-        }
-        else {
-            GV.MemDecoration = Arg2dword;
-        }
-
+        (*pMyDisasm).Instruction.Mnemonic = I_INSERTPS;
         GV.ImmediatSize = 8;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-
-
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm32(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -1155,23 +754,21 @@ void __bea_callspec__ insertps_(PDISASM pMyDisasm)
 void __bea_callspec__ lddqu_(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+SPECIALIZED_128bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "lddqu ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_LDDQU;
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_+= GV.DECALAGE_EIP+2;
+        if (GV.MOD_ == 3) {
+            FailDecode(pMyDisasm);
+        }
+        (*pMyDisasm).Argument2.ArgSize = 128;
+        RegSSE_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_+= GV.DECALAGE_EIP;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -1181,27 +778,26 @@ void __bea_callspec__ lddqu_(PDISASM pMyDisasm)
 void __bea_callspec__ maskmovq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CACHEABILITY_CONTROL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "maskmovdqu ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MASKMOVDQU;
+        XMMregXMMrm(pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ;
+        (*pMyDisasm).Argument3.ArgType = IMPLICIT_ARG+MEMORY_TYPE;
+        (*pMyDisasm).Argument3.Memory.BaseRegister = REG7;
+        (*pMyDisasm).Argument3.ArgSize = 8; /* don't know */
+        (*pMyDisasm).Argument3.AccessMode = WRITE;
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+CACHEABILITY_CONTROL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "maskmovq ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MASKMOVQ;
+        MMregMMrm(pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ;
+        (*pMyDisasm).Argument3.ArgType = IMPLICIT_ARG+MEMORY_TYPE;
+        (*pMyDisasm).Argument3.Memory.BaseRegister = REG7;
+        (*pMyDisasm).Argument3.ArgSize = 8; /* don't know */
+        (*pMyDisasm).Argument3.AccessMode = WRITE;
     }
 }
 
@@ -1212,51 +808,34 @@ void __bea_callspec__ maskmovq_(PDISASM pMyDisasm)
 void __bea_callspec__ maxps_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "maxsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MAXSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "maxss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MAXSS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "maxpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MAXPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "maxps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MAXPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1267,51 +846,34 @@ void __bea_callspec__ maxps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ minps_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "minsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MINSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "minss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MINSS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "minpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MINPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "minps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MINPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1321,27 +883,16 @@ void __bea_callspec__ minps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ movaps_VW(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movapd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVAPD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movaps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVAPS;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1351,27 +902,16 @@ void __bea_callspec__ movaps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ movaps_WV(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg1dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movapd ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVAPD;
+        XMMrmXMMreg(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movaps ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVAPS;
+        XMMrmXMMreg(pMyDisasm);
     }
 }
 
@@ -1381,49 +921,29 @@ void __bea_callspec__ movaps_WV(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ movhps_VM(PDISASM pMyDisasm)
 {
-
     /* ========= 0xf3 */
-    if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movshdup ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVSHDUP;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movhpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVHPD;
+        XMMregXMMrm64(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+DATA_TRANSFER;
-        GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 6) & 0x3;
+        XMMregXMMrm64(pMyDisasm);
         if (GV.MOD_== 0x3) {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movlhps ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_MOVLHPS;
         }
         else {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movhps ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_MOVHPS;
         }
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
     }
 }
 
@@ -1433,29 +953,17 @@ void __bea_callspec__ movhps_VM(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ movhps_MV(PDISASM pMyDisasm)
 {
-
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg1qword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movhpd ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVHPD;
+        XMMrm64XMMreg(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg1qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movhps ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVHPS;
+        XMMrm64XMMreg(pMyDisasm);
     }
 }
 
@@ -1466,58 +974,35 @@ void __bea_callspec__ movhps_MV(PDISASM pMyDisasm)
 void __bea_callspec__ movlps_VM(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movddup ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVDDUP;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE3_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movsldup ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVSLDUP;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movlpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVLPD;
+        XMMregXMMrm64(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+DATA_TRANSFER;
+        XMMregXMMrm64(pMyDisasm);
         if (GV.MOD_== 0x3) {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movhlps ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_MOVHLPS;
         }
         else {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movlps ");
-            #endif
+            (*pMyDisasm).Instruction.Mnemonic = I_MOVLPS;
         }
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
     }
 }
 
@@ -1527,29 +1012,17 @@ void __bea_callspec__ movlps_VM(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ movlps_MV(PDISASM pMyDisasm)
 {
-
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg1qword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movlpd ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVLPD;
+        XMMrm64XMMreg(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg1qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movlps ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVLPS;
+        XMMrm64XMMreg(pMyDisasm);
     }
 }
 
@@ -1559,38 +1032,34 @@ void __bea_callspec__ movlps_MV(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ movmskps_(PDISASM pMyDisasm)
 {
-    GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 6) & 0x3;
+    GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_))) >> 6) & 0x3;
     if (GV.MOD_!= 0x3) {
         FailDecode(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movmskpd ");
-        #endif
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVMSKPD;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
+        }
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 128;
         Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+2;
-
+        GV.EIP_ += GV.DECALAGE_EIP;
     }
     else {
-        GV.MemDecoration = Arg2dqword;
+        (*pMyDisasm).Argument2.ArgSize = 128;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+DATA_TRANSFER;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movmskps ");
-        #endif
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVMSKPS;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
+        }
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 128;
         Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+2;
-
+        GV.EIP_ += GV.DECALAGE_EIP;
     }
 }
 
@@ -1600,19 +1069,12 @@ void __bea_callspec__ movmskps_(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ movntdqa_(PDISASM pMyDisasm)
 {
-
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+STREAMING_LOAD;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movntdqa ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVNTDQA;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -1626,11 +1088,8 @@ void __bea_callspec__ movntdqa_(PDISASM pMyDisasm)
 void __bea_callspec__ movnti_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CACHEABILITY_CONTROL;
-    #ifndef BEA_LIGHT_DISASSEMBLY
-       (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movnti ");
-    #endif
+    (*pMyDisasm).Instruction.Mnemonic = I_MOVNTI;
     EvGv(pMyDisasm);
-
 }
 
 
@@ -1639,38 +1098,21 @@ void __bea_callspec__ movnti_(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ movntps_(PDISASM pMyDisasm)
 {
-    GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 6) & 0x3;
+    GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_))) >> 6) & 0x3;
     if (GV.MOD_== 0x3) {
         FailDecode(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg1dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CACHEABILITY_CONTROL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movntpd ");
-        #endif
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+2;
-
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVNTPD;
+        XMMrmXMMreg(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg1dqword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CACHEABILITY_CONTROL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movntps ");
-        #endif
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+2;
-
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVNTPS;
+        XMMrmXMMreg(pMyDisasm);
     }
 }
 
@@ -1685,27 +1127,16 @@ void __bea_callspec__ movntq_(PDISASM pMyDisasm)
         FailDecode(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg1dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+CACHEABILITY_CONTROL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movntdq ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVNTDQ;
+        XMMrmXMMreg(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg1qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+CACHEABILITY_CONTROL;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movntq ");
-        #endif
-        GV.MMX_ = 1;
-        ExGx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVNTQ;
+        XMMrm64XMMreg(pMyDisasm);
     }
 }
 
@@ -1716,51 +1147,30 @@ void __bea_callspec__ movntq_(PDISASM pMyDisasm)
 void __bea_callspec__ movups_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVSD;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVSS;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movupd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVUPD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movups ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVUPS;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1772,51 +1182,30 @@ void __bea_callspec__ movups_VW(PDISASM pMyDisasm)
 void __bea_callspec__ movups_WV(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg1qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movsd ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVSD;
+        XMMrm64XMMreg(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg1dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movss ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVSS;
+        XMMrm32XMMreg(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg1dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movupd ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVUPD;
+        XMMrmXMMreg(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg1dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "movups ");
-        #endif
-        GV.SSE_ = 1;
-        ExGx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MOVUPS;
+        XMMrmXMMreg(pMyDisasm);
     }
 }
 
@@ -1827,34 +1216,22 @@ void __bea_callspec__ movups_WV(PDISASM pMyDisasm)
 void __bea_callspec__ mpsadbw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+SAD_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "mpsadbw ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_MPSADBW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -1864,51 +1241,34 @@ void __bea_callspec__ mpsadbw_(PDISASM pMyDisasm)
 void __bea_callspec__ mulps_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "mulsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MULSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========== 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "mulss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MULSS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "mulpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MULPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "mulps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_MULPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1919,27 +1279,18 @@ void __bea_callspec__ mulps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ orps_VW(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "orpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ORPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "orps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_ORPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -1950,23 +1301,16 @@ void __bea_callspec__ orps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ packusdw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "packusdw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-
+        (*pMyDisasm).Instruction.Mnemonic = I_PACKUSDW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -1977,25 +1321,16 @@ void __bea_callspec__ paddq_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SIMD128bits;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "paddq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PADDQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "paddq ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PADDQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2007,25 +1342,16 @@ void __bea_callspec__ pavgb_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pavgb ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PAVGB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pavgb ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PAVGB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2037,25 +1363,16 @@ void __bea_callspec__ pavgw_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pavgw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PAVGW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pavgw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PAVGW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2067,47 +1384,28 @@ void __bea_callspec__ palignr_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "palignr ");
-        #endif
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PALIGNR;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "palignr ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PALIGNR;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        MMregMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
 }
 
@@ -2119,25 +1417,16 @@ void __bea_callspec__ pblendvb_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_BLENDING_INSTRUCTION;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pblendvb ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PBLENDVB;
+        XMMregXMMrm(pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        (*pMyDisasm).Argument3.ArgType = IMPLICIT_ARG+SSE_REG+REG0;
+        (*pMyDisasm).Argument3.ArgSize = 128;
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pblendvb ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        FailDecode(pMyDisasm);
     }
 }
 
@@ -2148,34 +1437,22 @@ void __bea_callspec__ pblendvb_(PDISASM pMyDisasm)
 void __bea_callspec__ pblendw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+SAD_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pblendw ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PBLENDW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2185,23 +1462,16 @@ void __bea_callspec__ pblendw_(PDISASM pMyDisasm)
 void __bea_callspec__ pcmpeqq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_EQUALITY;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pcmpeqq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-
+        (*pMyDisasm).Instruction.Mnemonic = I_PCMPEQQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2211,34 +1481,23 @@ void __bea_callspec__ pcmpeqq_(PDISASM pMyDisasm)
 void __bea_callspec__ pcmpestri_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pcmpestri ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PCMPESTRI;
+        (*pMyDisasm).Argument1.AccessMode = READ;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        (*pMyDisasm).Instruction.ImplicitModifiedRegs = GENERAL_REG+REG1;
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2248,34 +1507,23 @@ void __bea_callspec__ pcmpestri_(PDISASM pMyDisasm)
 void __bea_callspec__ pcmpestrm_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pcmpestrm ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PCMPESTRM;
+        (*pMyDisasm).Argument1.AccessMode = READ;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        (*pMyDisasm).Instruction.ImplicitModifiedRegs = SSE_REG+REG0;
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2285,29 +1533,19 @@ void __bea_callspec__ pcmpestrm_(PDISASM pMyDisasm)
 void __bea_callspec__ pcmpistri_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pcmpistri ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PCMPISTRI;
+        (*pMyDisasm).Argument1.AccessMode = READ;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        (*pMyDisasm).Instruction.ImplicitModifiedRegs = GENERAL_REG+REG1;
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -2322,34 +1560,23 @@ void __bea_callspec__ pcmpistri_(PDISASM pMyDisasm)
 void __bea_callspec__ pcmpistrm_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pcmpestrm ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PCMPESTRM;
+        (*pMyDisasm).Argument1.AccessMode = READ;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        (*pMyDisasm).Instruction.ImplicitModifiedRegs = SSE_REG+REG0;
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2359,23 +1586,16 @@ void __bea_callspec__ pcmpistrm_(PDISASM pMyDisasm)
 void __bea_callspec__ pcmpgtq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pcmpgtq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-
+        (*pMyDisasm).Instruction.Mnemonic = I_PCMPGTQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2385,41 +1605,32 @@ void __bea_callspec__ pcmpgtq_(PDISASM pMyDisasm)
 void __bea_callspec__ pextrb_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+INSERTION_EXTRACTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pextrb ");
-        #endif
-        GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 6) & 0x3;
-        if (GV.MOD_== 0x3) {
-            GV.MemDecoration = Arg1dword;
-        }
-        else {
-            GV.MemDecoration = Arg1byte;
+        (*pMyDisasm).Instruction.Mnemonic = I_PEXTRB;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
         }
         GV.ImmediatSize = 8;
         MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        if (GV.MOD_!= 0x3) {
+            (*pMyDisasm).Argument1.ArgSize = 8;
+        }
+        else {
+            (*pMyDisasm).Argument1.ArgSize = (*pMyDisasm).Instruction.OperandSize;
+        }
+        RegSSE_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2429,45 +1640,41 @@ void __bea_callspec__ pextrb_(PDISASM pMyDisasm)
 void __bea_callspec__ pextrd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 128;
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+INSERTION_EXTRACTION;
-        if (GV.REX.W_ == 0x1) {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pextrq ");
-            #endif
-            GV.MemDecoration = Arg1qword;
-            GV.OperandSize = 64;
+        GV.ImmediatSize = 8;
+        if ((*pMyDisasm).Prefix.REX.W_) {
+            (*pMyDisasm).Instruction.Mnemonic = I_PEXTRQ;
+            (*pMyDisasm).Instruction.OperandSize = 64;
+            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
+            (*pMyDisasm).Argument1.ArgSize = 64;
         }
         else {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pextrd ");
-            #endif
-            GV.MemDecoration = Arg1dword;
+            (*pMyDisasm).Instruction.Mnemonic = I_PEXTRD;
+            if ((*pMyDisasm).Archi == 64) {
+                (*pMyDisasm).Instruction.OperandSize = 64;
+            }
+            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
+            if (GV.MOD_!= 0x3) {
+                (*pMyDisasm).Argument1.ArgSize = 32;
+            }
+            else {
+                (*pMyDisasm).Argument1.ArgSize = (*pMyDisasm).Instruction.OperandSize;
+            }
         }
-        GV.ImmediatSize = 8;
-        MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        RegSSE_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 /* ====================================================================
@@ -2476,54 +1683,41 @@ void __bea_callspec__ pextrd_(PDISASM pMyDisasm)
 void __bea_callspec__ pextrw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pextrw ");
-        #endif
-        GV.MemDecoration = Arg2dqword;
+        (*pMyDisasm).Instruction.Mnemonic = I_PEXTRW;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
+        }
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 128;
         Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pextrw ");
-        #endif
-        GV.MemDecoration = Arg2dqword;
+        (*pMyDisasm).Instruction.Mnemonic = I_PEXTRW;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
+        }
         GV.ImmediatSize = 8;
-        GV.MMX_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.MMX_ = 0;
+        MOD_RM_MMX(&(*pMyDisasm).Argument2, pMyDisasm);
+        (*pMyDisasm).Argument2.ArgSize = 64;
         Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
-
 }
 
 /* ====================================================================
@@ -2532,41 +1726,32 @@ void __bea_callspec__ pextrw_(PDISASM pMyDisasm)
 void __bea_callspec__ pextrw2_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+INSERTION_EXTRACTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pextrw ");
-        #endif
-        GV.MOD_= ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 6) & 0x3;
-        if (GV.MOD_== 0x3) {
-            GV.MemDecoration = Arg1dword;
-        }
-        else {
-            GV.MemDecoration = Arg1word;
+        (*pMyDisasm).Instruction.Mnemonic = I_PEXTRW;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
         }
         GV.ImmediatSize = 8;
         MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        RegSSE_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
+        if (GV.MOD_!= 0x3) {
+            (*pMyDisasm).Argument1.ArgSize = 16;
+        }
+        else {
+            (*pMyDisasm).Argument1.ArgSize = (*pMyDisasm).Instruction.OperandSize;
+        }
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2576,27 +1761,18 @@ void __bea_callspec__ pextrw2_(PDISASM pMyDisasm)
 void __bea_callspec__ phaddd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phaddd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHADDD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phaddd ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHADDD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2607,27 +1783,18 @@ void __bea_callspec__ phaddd_(PDISASM pMyDisasm)
 void __bea_callspec__ phaddsw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phaddsw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHADDSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phaddsw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHADDSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2638,27 +1805,18 @@ void __bea_callspec__ phaddsw_(PDISASM pMyDisasm)
 void __bea_callspec__ phaddw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phaddw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHADDW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phaddw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHADDW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2669,17 +1827,11 @@ void __bea_callspec__ phaddw_(PDISASM pMyDisasm)
 void __bea_callspec__ phminposuw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+HORIZONTAL_SEARCH;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phminposuw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHMINPOSUW;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -2693,27 +1845,18 @@ void __bea_callspec__ phminposuw_(PDISASM pMyDisasm)
 void __bea_callspec__ phsubw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phsubw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHSUBW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phsubw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHSUBW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2724,27 +1867,18 @@ void __bea_callspec__ phsubw_(PDISASM pMyDisasm)
 void __bea_callspec__ phsubd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phsubd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHSUBD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phsubd ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHSUBD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2755,27 +1889,18 @@ void __bea_callspec__ phsubd_(PDISASM pMyDisasm)
 void __bea_callspec__ phsubsw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phsubsw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHSUBSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "phsubsw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PHSUBSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -2786,34 +1911,26 @@ void __bea_callspec__ phsubsw_(PDISASM pMyDisasm)
 void __bea_callspec__ pinsrb_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2byte;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+INSERTION_EXTRACTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pinsrb ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PINSRB;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
+        RegSSE_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        if (GV.MOD_ != 3) {
+            (*pMyDisasm).Argument2.ArgSize = 8;
+        }
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2823,44 +1940,32 @@ void __bea_callspec__ pinsrb_(PDISASM pMyDisasm)
 void __bea_callspec__ pinsrd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+INSERTION_EXTRACTION;
-        if (GV.REX.W_ == 0x1) {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pinsrq ");
-            #endif
-            GV.MemDecoration = Arg1qword;
+        if ((*pMyDisasm).Prefix.REX.W_) {
+            (*pMyDisasm).Instruction.Mnemonic = I_PINSRQ;
+            (*pMyDisasm).Instruction.OperandSize = 64;
+            (*pMyDisasm).Argument2.ArgSize = 64;
         }
         else {
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pinsrd ");
-            #endif
-            GV.MemDecoration = Arg1dword;
+            (*pMyDisasm).Instruction.Mnemonic = I_PINSRD;
+            (*pMyDisasm).Instruction.OperandSize = 32;
+            (*pMyDisasm).Argument2.ArgSize = 32;
         }
         GV.ImmediatSize = 8;
-        MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
+        RegSSE_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -2870,54 +1975,35 @@ void __bea_callspec__ pinsrd_(PDISASM pMyDisasm)
 void __bea_callspec__ pinsrw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pinsrw ");
-        #endif
-        GV.MemDecoration = Arg2word;
+        (*pMyDisasm).Instruction.Mnemonic = I_PINSRW;
+        (*pMyDisasm).Argument2.ArgSize = 16;
         GV.ImmediatSize = 8;
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        RegSSE_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
+        GV.EIP_++;
     }
     else {
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pinsrw ");
-        #endif
-        GV.MemDecoration = Arg2word;
+        (*pMyDisasm).Instruction.Mnemonic = I_PINSRW;
+        (*pMyDisasm).Argument2.ArgSize = 16;
         GV.ImmediatSize = 8;
         MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.MMX_ = 1;
-        Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.MMX_ = 0;
-        GV.EIP_ += GV.DECALAGE_EIP+3;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        RegMMX_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
+        GV.EIP_ += GV.DECALAGE_EIP;
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
-
 }
 
 
@@ -2927,17 +2013,12 @@ void __bea_callspec__ pinsrw_(PDISASM pMyDisasm)
 void __bea_callspec__ pmaxsb_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxsb ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXSB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -2950,17 +2031,12 @@ void __bea_callspec__ pmaxsb_(PDISASM pMyDisasm)
 void __bea_callspec__ pmaxsd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -2973,17 +2049,12 @@ void __bea_callspec__ pmaxsd_(PDISASM pMyDisasm)
 void __bea_callspec__ pmaxuw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxuw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXUW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -2996,17 +2067,12 @@ void __bea_callspec__ pmaxuw_(PDISASM pMyDisasm)
 void __bea_callspec__ pmaxud_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxud ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXUD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3019,17 +2085,12 @@ void __bea_callspec__ pmaxud_(PDISASM pMyDisasm)
 void __bea_callspec__ pminsb_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminsb ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINSB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3042,17 +2103,12 @@ void __bea_callspec__ pminsb_(PDISASM pMyDisasm)
 void __bea_callspec__ pminsd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3065,17 +2121,12 @@ void __bea_callspec__ pminsd_(PDISASM pMyDisasm)
 void __bea_callspec__ pminuw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminuw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINUW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3088,17 +2139,12 @@ void __bea_callspec__ pminuw_(PDISASM pMyDisasm)
 void __bea_callspec__ pminud_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_MINMAX;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminud ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINUD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3112,27 +2158,18 @@ void __bea_callspec__ pminud_(PDISASM pMyDisasm)
 void __bea_callspec__ pminub_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminub ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINUB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminub ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINUB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3143,27 +2180,19 @@ void __bea_callspec__ pminub_(PDISASM pMyDisasm)
 void __bea_callspec__ pmaxub_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxub ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXUB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
+        (*pMyDisasm).Argument2.ArgSize = 64;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxub ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXUB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3174,27 +2203,18 @@ void __bea_callspec__ pmaxub_(PDISASM pMyDisasm)
 void __bea_callspec__ pminsw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminsw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pminsw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMINSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3205,27 +2225,18 @@ void __bea_callspec__ pminsw_(PDISASM pMyDisasm)
 void __bea_callspec__ pmaxsw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxsw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaxsw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMAXSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3236,27 +2247,18 @@ void __bea_callspec__ pmaxsw_(PDISASM pMyDisasm)
 void __bea_callspec__ pmaddubsw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaddubsw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMADDUBSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmaddubsw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMADDUBSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3267,34 +2269,29 @@ void __bea_callspec__ pmaddubsw_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovmskb_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovmskb ");
-        #endif
-        GV.MemDecoration = Arg2dqword;
-        GV.SSE_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVMSKB;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
+        }
+        (*pMyDisasm).Argument2.ArgSize = 128;
+        MOD_RM_SSE(&(*pMyDisasm).Argument2, pMyDisasm);
         Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+2;
+        GV.EIP_ += GV.DECALAGE_EIP;
     }
     else {
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovmskb ");
-        #endif
-        GV.MemDecoration = Arg2qword;
-        GV.MMX_ = 1;
-        MOD_RM(&(*pMyDisasm).Argument2, pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVMSKB;
+        if ((*pMyDisasm).Archi == 64) {
+            (*pMyDisasm).Instruction.OperandSize = 64;
+        }
+        (*pMyDisasm).Argument2.ArgSize = 64;
+        MOD_RM_MMX(&(*pMyDisasm).Argument2, pMyDisasm);
         Reg_Opcode(&(*pMyDisasm).Argument1, pMyDisasm);
-        GV.EIP_ += GV.DECALAGE_EIP+2;
+        GV.EIP_ += GV.DECALAGE_EIP;
     }
-
 }
 
 
@@ -3304,17 +2301,11 @@ void __bea_callspec__ pmovmskb_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovsxbd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovsxbd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVSXBD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3328,17 +2319,11 @@ void __bea_callspec__ pmovsxbd_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovsxbq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovsxbq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVSXBQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3352,17 +2337,11 @@ void __bea_callspec__ pmovsxbq_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovsxbw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovsxbw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVSXBW;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3376,17 +2355,11 @@ void __bea_callspec__ pmovsxbw_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovsxdq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovsxdq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVSXDQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3400,17 +2373,11 @@ void __bea_callspec__ pmovsxdq_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovsxwd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovsxwd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVSXWD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3424,17 +2391,11 @@ void __bea_callspec__ pmovsxwd_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovsxwq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovsxwq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVSXWQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3448,17 +2409,11 @@ void __bea_callspec__ pmovsxwq_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovzxbd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovzxbd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVZXBD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3472,17 +2427,11 @@ void __bea_callspec__ pmovzxbd_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovzxbq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovzxbq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVZXBQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3496,17 +2445,11 @@ void __bea_callspec__ pmovzxbq_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovzxbw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovzxbw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVZXBW;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3520,17 +2463,11 @@ void __bea_callspec__ pmovzxbw_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovzxdq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovzxdq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVZXDQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3544,17 +2481,11 @@ void __bea_callspec__ pmovzxdq_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovzxwd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovzxwd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVZXWD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3568,17 +2499,11 @@ void __bea_callspec__ pmovzxwd_(PDISASM pMyDisasm)
 void __bea_callspec__ pmovzxwq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+CONVERSION_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmovzxwq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMOVZXWQ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3592,17 +2517,12 @@ void __bea_callspec__ pmovzxwq_(PDISASM pMyDisasm)
 void __bea_callspec__ pmuldq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmuldq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULDQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3616,17 +2536,12 @@ void __bea_callspec__ pmuldq_(PDISASM pMyDisasm)
 void __bea_callspec__ pmulld_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmulld ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULLD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -3640,27 +2555,18 @@ void __bea_callspec__ pmulld_(PDISASM pMyDisasm)
 void __bea_callspec__ pmulhrsw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmulhrsw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULHRSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmulhrsw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULHRSW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3672,25 +2578,16 @@ void __bea_callspec__ pmulhuw_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmulhuw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULHUW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmulhuw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULHUW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3702,25 +2599,16 @@ void __bea_callspec__ pmuludq_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmuludq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULUDQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pmuludq ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PMULUDQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3731,11 +2619,9 @@ void __bea_callspec__ pmuludq_(PDISASM pMyDisasm)
 void __bea_callspec__ popcnt_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE42_INSTRUCTION+DATA_TRANSFER;
-    #ifndef BEA_LIGHT_DISASSEMBLY
-       (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "popcnt ");
-    #endif
+    (*pMyDisasm).Instruction.Mnemonic = I_POPCNT;
     GvEv(pMyDisasm);
-    FillFlags(pMyDisasm,114);
+    FillFlags(pMyDisasm, EFLAGS_POPCNT);
 }
 
 
@@ -3746,25 +2632,16 @@ void __bea_callspec__ psadbw_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SIMD64bits;
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psadbw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PSADBW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psadbw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSADBW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3775,27 +2652,16 @@ void __bea_callspec__ psadbw_(PDISASM pMyDisasm)
 void __bea_callspec__ pshufb_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pshufb ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSHUFB;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pshufb ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSHUFB;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3807,92 +2673,50 @@ void __bea_callspec__ pshufw_(PDISASM pMyDisasm)
 {
     (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SIMD128bits;
     /* ========= 0xf3 */
-    if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pshufhw ");
-        #endif
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSHUFHW;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     /* ========= 0xf2 */
-    else if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pshuflw ");
-        #endif
-        GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSHUFLW;
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
 
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pshufd ");
-        #endif
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
+        (*pMyDisasm).Instruction.Mnemonic = I_PSHUFD;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     else {
-        GV.MemDecoration = Arg2qword;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pshufw ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_PSHUFW;
         GV.ImmediatSize = 8;
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        MMregMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
 }
 
@@ -3902,27 +2726,18 @@ void __bea_callspec__ pshufw_(PDISASM pMyDisasm)
 void __bea_callspec__ psignb_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+PACKED_SIGN;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psignb ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSIGNB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+PACKED_SIGN;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psignb ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSIGNB;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3933,27 +2748,18 @@ void __bea_callspec__ psignb_(PDISASM pMyDisasm)
 void __bea_callspec__ psignd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+PACKED_SIGN;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psignd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSIGND;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+PACKED_SIGN;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psignd ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSIGND;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3964,27 +2770,18 @@ void __bea_callspec__ psignd_(PDISASM pMyDisasm)
 void __bea_callspec__ psignw_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+PACKED_SIGN;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psignw ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSIGNW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSSE3_INSTRUCTION+PACKED_SIGN;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psignw ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSIGNW;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -3995,27 +2792,18 @@ void __bea_callspec__ psignw_(PDISASM pMyDisasm)
 void __bea_callspec__ psubq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SIMD128bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psubq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSUBQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2qword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SIMD128bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psubq ");
-        #endif
-        GV.MMX_ = 1;
-        GxEx(pMyDisasm);
-        GV.MMX_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PSUBQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        MMregMMrm(pMyDisasm);
     }
 }
 
@@ -4026,17 +2814,12 @@ void __bea_callspec__ psubq_(PDISASM pMyDisasm)
 void __bea_callspec__ ptest_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+PACKED_TEST;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "ptest ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PTEST;
+        (*pMyDisasm).Argument1.AccessMode = READ;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -4050,22 +2833,16 @@ void __bea_callspec__ ptest_(PDISASM pMyDisasm)
 void __bea_callspec__ punpcklqdq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SIMD128bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "punpcklqdq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PUNPCKLQDQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 /* ====================================================================
@@ -4074,22 +2851,16 @@ void __bea_callspec__ punpcklqdq_(PDISASM pMyDisasm)
 void __bea_callspec__ punpckhqdq_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SIMD128bits;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "punpckhqdq ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_PUNPCKHQDQ;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
     }
-
 }
 
 
@@ -4099,26 +2870,16 @@ void __bea_callspec__ punpckhqdq_(PDISASM pMyDisasm)
 void __bea_callspec__ rcpps_(PDISASM pMyDisasm)
 {
     /* ========== 0xf3 */
-    if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "rcpss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_RCPSS;
+        XMMregXMMrm32(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "rcpps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_RCPPS;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -4129,28 +2890,17 @@ void __bea_callspec__ rcpps_(PDISASM pMyDisasm)
 void __bea_callspec__ roundpd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+ROUND_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "roundpd ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_ROUNDPD;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -4164,28 +2914,17 @@ void __bea_callspec__ roundpd_(PDISASM pMyDisasm)
 void __bea_callspec__ roundps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+ROUND_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "roundps ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_ROUNDPS;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -4199,28 +2938,17 @@ void __bea_callspec__ roundps_(PDISASM pMyDisasm)
 void __bea_callspec__ roundsd_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+ROUND_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "roundsd ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_ROUNDSD;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -4234,28 +2962,17 @@ void __bea_callspec__ roundsd_(PDISASM pMyDisasm)
 void __bea_callspec__ roundss_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE41_INSTRUCTION+ROUND_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "roundss ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_ROUNDSS;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
-        GV.EIP_++;
-        if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        XMMregXMMrm32(pMyDisasm);
+        if (!Security1(pMyDisasm)) return;
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
+        GV.EIP_++;
     }
     else {
         FailDecode(pMyDisasm);
@@ -4269,26 +2986,16 @@ void __bea_callspec__ roundss_(PDISASM pMyDisasm)
 void __bea_callspec__ rsqrtps_(PDISASM pMyDisasm)
 {
     /* ========== 0xf3 */
-    if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "rsqrtss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_RSQRTSS;
+        XMMregXMMrm32(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "rsqrtps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_RSQRTPS;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -4298,42 +3005,27 @@ void __bea_callspec__ rsqrtps_(PDISASM pMyDisasm)
  * ==================================================================== */
 void __bea_callspec__ shufps_(PDISASM pMyDisasm)
 {
-
     /* ========== 0x66 */
     GV.ImmediatSize = 8;
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "shufpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SHUFPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "shufps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SHUFPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     (*pMyDisasm).Argument1.AccessMode = READ;
-    GV.EIP_++;
-    if (!Security(0, pMyDisasm)) return;
-    GV.third_arg = 1;
-    (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-    #ifndef BEA_LIGHT_DISASSEMBLY
-       (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-    #endif
+    if (!Security1(pMyDisasm)) return;
+    (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_));
     (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
     (*pMyDisasm).Argument3.ArgSize = 8;
-
+    GV.EIP_++;
 }
 
 
@@ -4343,51 +3035,30 @@ void __bea_callspec__ shufps_(PDISASM pMyDisasm)
 void __bea_callspec__ sqrtps_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "sqrtsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SQRTSD;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "sqrtss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SQRTSS;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "sqrtpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SQRTPD;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "sqrtps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SQRTPS;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -4398,51 +3069,34 @@ void __bea_callspec__ sqrtps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ subps_VW(PDISASM pMyDisasm)
 {
     /* ========= 0xf2 */
-    if (GV.PrefRepne == 1) {
-        (*pMyDisasm).Prefix.RepnePrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2qword;
+    if ((*pMyDisasm).Prefix.Repeat == PrefixRepne) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "subsd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SUBSD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm64(pMyDisasm);
     }
     /* ========= 0xf3 */
-    else if (GV.PrefRepe == 1) {
-        (*pMyDisasm).Prefix.RepPrefix = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    else if ((*pMyDisasm).Prefix.Repeat == PrefixRepe) {
+        (*pMyDisasm).Prefix.RepeatState = MandatoryPrefix;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "subss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SUBSS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm32(pMyDisasm);
     }
     /* ========== 0x66 */
-    else if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    else if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "subpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SUBPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "subps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_SUBPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -4453,27 +3107,18 @@ void __bea_callspec__ subps_VW(PDISASM pMyDisasm)
 void __bea_callspec__ ucomiss_VW(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dword;
+    if ((*pMyDisasm).Instruction.OperandSize == 16) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "ucomisd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_UCOMISD;
+        (*pMyDisasm).Argument1.AccessMode = READ;
+        XMMregXMMrm32(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+COMPARISON_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "ucomiss ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_UCOMISS;
+        (*pMyDisasm).Argument1.AccessMode = READ;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -4484,27 +3129,18 @@ void __bea_callspec__ ucomiss_VW(PDISASM pMyDisasm)
 void __bea_callspec__ unpckhps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Instruction.OperandSize == 16) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "unpckhpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_UNPCKHPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "unpckhps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_UNPCKHPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -4514,27 +3150,18 @@ void __bea_callspec__ unpckhps_(PDISASM pMyDisasm)
 void __bea_callspec__ unpcklps_(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "unpcklpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_UNPCKLPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+SHUFFLE_UNPACK;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "unpcklps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_UNPCKLPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }
 
@@ -4545,26 +3172,17 @@ void __bea_callspec__ unpcklps_(PDISASM pMyDisasm)
 void __bea_callspec__ xorps_VW(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if ((*pMyDisasm).Prefix.OperandSize == InUsePrefix) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = SSE2_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "xorpd ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_XORPD;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
-        GV.MemDecoration = Arg2dqword;
         (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+LOGICAL_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "xorps ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_XORPS;
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        XMMregXMMrm(pMyDisasm);
     }
 }

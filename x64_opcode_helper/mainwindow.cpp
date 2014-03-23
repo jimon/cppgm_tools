@@ -150,7 +150,11 @@ void MainWindow::disasm(const QString & opcode)
 	m.EIP = (uintptr_t)bytes.data();
 	m.Archi = 64;
 	Disasm(&m);
-	output += m.CompleteInstr;
+	//output += m.CompleteInstr;
+
+	char temp[512];
+	BuildAssembly(&m, temp);
+	output += temp;
 
 
 	ui->plainTextEdit->document()->setHtml(output);

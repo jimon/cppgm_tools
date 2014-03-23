@@ -21,28 +21,26 @@
  * ==================================================================== */
 void __bea_callspec__ G4_Eb(PDISASM pMyDisasm)
 {
-    GV.REGOPCODE = ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 3) & 0x7;
+    GV.REGOPCODE = ((*((UInt8*)(UIntPtr) (GV.EIP_))) >> 3) & 0x7;
     if (GV.REGOPCODE == 0) {
-        if ((*pMyDisasm).Prefix.LockPrefix == InvalidPrefix) {
-            (*pMyDisasm).Prefix.LockPrefix = InUsePrefix;
-        }
         (*pMyDisasm).Instruction.Category = GENERAL_PURPOSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "inc ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_INC;
         Eb(pMyDisasm);
-        FillFlags(pMyDisasm, 40);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        FillFlags(pMyDisasm, EFLAGS_INC);
+        if ((*pMyDisasm).Prefix.LockState == InvalidPrefix && (*pMyDisasm).Argument1.ArgType & MEMORY_TYPE) {
+            (*pMyDisasm).Prefix.LockState = InUsePrefix;
+        }
     }
     else if (GV.REGOPCODE == 1) {
-        if ((*pMyDisasm).Prefix.LockPrefix == InvalidPrefix) {
-            (*pMyDisasm).Prefix.LockPrefix = InUsePrefix;
-        }
         (*pMyDisasm).Instruction.Category = GENERAL_PURPOSE_INSTRUCTION+ARITHMETIC_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "dec ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_DEC;
         Eb(pMyDisasm);
-        FillFlags(pMyDisasm, 30);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        FillFlags(pMyDisasm, EFLAGS_DEC);
+        if ((*pMyDisasm).Prefix.LockState == InvalidPrefix && (*pMyDisasm).Argument1.ArgType & MEMORY_TYPE) {
+            (*pMyDisasm).Prefix.LockState = InUsePrefix;
+        }
     }
     else {
         FailDecode(pMyDisasm);

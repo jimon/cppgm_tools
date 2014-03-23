@@ -22,17 +22,11 @@
 void __bea_callspec__ aesimc(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = AES_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "aesimc ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_AESIMC;
+        XMMregXMMrm(pMyDisasm);
     }
     else {
         FailDecode(pMyDisasm);
@@ -45,17 +39,12 @@ void __bea_callspec__ aesimc(PDISASM pMyDisasm)
 void __bea_callspec__ aesenc(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = AES_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "aesenc ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_AESENC;
+        XMMregXMMrm(pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
     }
     else {
         FailDecode(pMyDisasm);
@@ -68,17 +57,12 @@ void __bea_callspec__ aesenc(PDISASM pMyDisasm)
 void __bea_callspec__ aesenclast(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = AES_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "aesenclast ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_AESENCLAST;
+        XMMregXMMrm(pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
     }
     else {
         FailDecode(pMyDisasm);
@@ -91,17 +75,12 @@ void __bea_callspec__ aesenclast(PDISASM pMyDisasm)
 void __bea_callspec__ aesdec(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = AES_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "aesdec ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_AESDEC;
+        XMMregXMMrm(pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
     }
     else {
         FailDecode(pMyDisasm);
@@ -114,17 +93,12 @@ void __bea_callspec__ aesdec(PDISASM pMyDisasm)
 void __bea_callspec__ aesdeclast(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = AES_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "aesdeclast ");
-        #endif
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        (*pMyDisasm).Instruction.Mnemonic = I_AESDECLAST;
+        XMMregXMMrm(pMyDisasm);
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
     }
     else {
         FailDecode(pMyDisasm);
@@ -137,29 +111,17 @@ void __bea_callspec__ aesdeclast(PDISASM pMyDisasm)
 void __bea_callspec__ aeskeygen(PDISASM pMyDisasm)
 {
     /* ========== 0x66 */
-    if (GV.OperandSize == 16) {
-        GV.OperandSize = GV.OriginalOperandSize;
-        (*pMyDisasm).Prefix.OperandSize = MandatoryPrefix;
-        GV.MemDecoration = Arg2dqword;
+    if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+        PrefOpSizeMandatory(pMyDisasm);
         (*pMyDisasm).Instruction.Category = AES_INSTRUCTION;
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "aeskeygenassist ");
-        #endif
+        (*pMyDisasm).Instruction.Mnemonic = I_AESKEYGENASSIST;
         GV.ImmediatSize = 8;
-        GV.SSE_ = 1;
-        GxEx(pMyDisasm);
-        GV.SSE_ = 0;
+        XMMregXMMrm(pMyDisasm);
         GV.EIP_++;
         if (!Security(0, pMyDisasm)) return;
-        GV.third_arg = 1;
-        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_- 1));
-        #ifndef BEA_LIGHT_DISASSEMBLY
-           (void) CopyFormattedNumber(pMyDisasm, (char*) (*pMyDisasm).Argument3.ArgMnemonic, "%.2X",(Int64) *((UInt8*)(UIntPtr) (GV.EIP_- 1)));
-        #endif
+        (*pMyDisasm).Instruction.Immediat = *((UInt8*)(UIntPtr) (GV.EIP_-1));
         (*pMyDisasm).Argument3.ArgType = CONSTANT_TYPE+ABSOLUTE_;
         (*pMyDisasm).Argument3.ArgSize = 8;
-
-
     }
     else {
         FailDecode(pMyDisasm);

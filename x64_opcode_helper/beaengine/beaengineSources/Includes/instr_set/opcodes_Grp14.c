@@ -21,86 +21,53 @@
  * ==================================================================== */
 void __bea_callspec__ G14_(PDISASM pMyDisasm)
 {
-    long MyNumber;
+    Int32 MyNumber;
 
-    GV.REGOPCODE = ((*((UInt8*)(UIntPtr) (GV.EIP_+1))) >> 3) & 0x7;
+    if (!Security(1, pMyDisasm)) return;
+    GV.REGOPCODE = ((*((UInt8*)(UIntPtr) (GV.EIP_))) >> 3) & 0x7;
     if (GV.REGOPCODE == 2) {
-        if (GV.OperandSize == 16) {
+        GV.ImmediatSize = 8;
+        if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+            PrefOpSizeMandatory(pMyDisasm);
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SHIFT_ROTATE;
-            GV.MemDecoration = Arg1dqword;
-            GV.ImmediatSize = 8;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
-            if (GV.MOD_== 0x3) {
-                #ifndef BEA_LIGHT_DISASSEMBLY
-                   (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psrlq ");
-                #endif
-            }
-            else {
-                FailDecode(pMyDisasm);
-            }
-            GV.EIP_ += GV.DECALAGE_EIP+3;
-            if (!Security(0, pMyDisasm)) return;
-
-            MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) CopyFormattedNumber(pMyDisasm, (char*) &(*pMyDisasm).Argument2.ArgMnemonic,"%.2X",(Int64) MyNumber);
-            #endif
-            (*pMyDisasm).Instruction.Immediat = MyNumber;
-            (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
-            (*pMyDisasm).Argument2.ArgSize = 8;
+            MOD_RM_SSE(&(*pMyDisasm).Argument1, pMyDisasm);
         }
         else {
             (*pMyDisasm).Instruction.Category = MMX_INSTRUCTION+SHIFT_ROTATE;
-            GV.MemDecoration = Arg1qword;
-            GV.ImmediatSize = 8;
-            GV.MMX_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.MMX_ = 0;
-            if (GV.MOD_== 0x3) {
-                #ifndef BEA_LIGHT_DISASSEMBLY
-                   (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psrlq ");
-                #endif
-            }
-            else {
-                FailDecode(pMyDisasm);
-            }
-            GV.EIP_ += GV.DECALAGE_EIP+3;
-            if (!Security(0, pMyDisasm)) return;
-
-            MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) CopyFormattedNumber(pMyDisasm, (char*) &(*pMyDisasm).Argument2.ArgMnemonic,"%.2X",(Int64) MyNumber);
-            #endif
-            (*pMyDisasm).Instruction.Immediat = MyNumber;
-            (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
-            (*pMyDisasm).Argument2.ArgSize = 8;
+            MOD_RM_MMX(&(*pMyDisasm).Argument1, pMyDisasm);
         }
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        if (GV.MOD_== 0x3) {
+            (*pMyDisasm).Instruction.Mnemonic = I_PSRLQ;
+        }
+        else {
+            FailDecode(pMyDisasm);
+        }
+        GV.EIP_ += 2;
+        if (!Security(0, pMyDisasm)) return;
+
+        MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
+        (*pMyDisasm).Instruction.Immediat = MyNumber;
+        (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
+        (*pMyDisasm).Argument2.ArgSize = 8;
     }
     else if (GV.REGOPCODE == 3) {
-        if (GV.OperandSize == 16) {
+        if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+            PrefOpSizeMandatory(pMyDisasm);
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SHIFT_ROTATE;
-            GV.MemDecoration = Arg1dqword;
             GV.ImmediatSize = 8;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
+            MOD_RM_SSE(&(*pMyDisasm).Argument1, pMyDisasm);
+            (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
             if (GV.MOD_== 0x3) {
-                #ifndef BEA_LIGHT_DISASSEMBLY
-                   (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psrldq ");
-                #endif
+                (*pMyDisasm).Instruction.Mnemonic = I_PSRLDQ;
             }
             else {
                 FailDecode(pMyDisasm);
             }
-            GV.EIP_ += GV.DECALAGE_EIP+3;
+            GV.EIP_ += 2;
             if (!Security(0, pMyDisasm)) return;
 
             MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) CopyFormattedNumber(pMyDisasm, (char*) &(*pMyDisasm).Argument2.ArgMnemonic,"%.2X",(Int64) MyNumber);
-            #endif
             (*pMyDisasm).Instruction.Immediat = MyNumber;
             (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
             (*pMyDisasm).Argument2.ArgSize = 8;
@@ -111,82 +78,48 @@ void __bea_callspec__ G14_(PDISASM pMyDisasm)
 
     }
     else if (GV.REGOPCODE == 6) {
-        if (GV.OperandSize == 16) {
+        GV.ImmediatSize = 8;
+        if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+            PrefOpSizeMandatory(pMyDisasm);
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SHIFT_ROTATE;
-            GV.MemDecoration = Arg1dqword;
-            GV.ImmediatSize = 8;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
-            if (GV.MOD_== 0x3) {
-                #ifndef BEA_LIGHT_DISASSEMBLY
-                   (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psllq ");
-                #endif
-            }
-            else {
-                FailDecode(pMyDisasm);
-            }
-            GV.EIP_ += GV.DECALAGE_EIP+3;
-            if (!Security(0, pMyDisasm)) return;
-
-            MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) CopyFormattedNumber(pMyDisasm, (char*) &(*pMyDisasm).Argument2.ArgMnemonic,"%.2X",(Int64) MyNumber);
-            #endif
-            (*pMyDisasm).Instruction.Immediat = MyNumber;
-            (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
-            (*pMyDisasm).Argument2.ArgSize = 8;
+            MOD_RM_SSE(&(*pMyDisasm).Argument1, pMyDisasm);
         }
         else {
             (*pMyDisasm).Instruction.Category = MMX_INSTRUCTION+SHIFT_ROTATE;
-            GV.MemDecoration = Arg1qword;
-            GV.ImmediatSize = 8;
-            GV.MMX_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.MMX_ = 0;
-            if (GV.MOD_== 0x3) {
-                #ifndef BEA_LIGHT_DISASSEMBLY
-                   (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "psllq ");
-                #endif
-            }
-            else {
-                FailDecode(pMyDisasm);
-            }
-            GV.EIP_ += GV.DECALAGE_EIP+3;
-            if (!Security(0, pMyDisasm)) return;
-
-            MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) CopyFormattedNumber(pMyDisasm, (char*) &(*pMyDisasm).Argument2.ArgMnemonic,"%.2X",(Int64) MyNumber);
-            #endif
-            (*pMyDisasm).Instruction.Immediat = MyNumber;
-            (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
-            (*pMyDisasm).Argument2.ArgSize = 8;
+            MOD_RM_MMX(&(*pMyDisasm).Argument1, pMyDisasm);
         }
+        (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
+        if (GV.MOD_== 0x3) {
+            (*pMyDisasm).Instruction.Mnemonic = I_PSLLQ;
+        }
+        else {
+            FailDecode(pMyDisasm);
+        }
+        GV.EIP_ += 2;
+        if (!Security(0, pMyDisasm)) return;
+
+        MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
+        (*pMyDisasm).Instruction.Immediat = MyNumber;
+        (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
+        (*pMyDisasm).Argument2.ArgSize = 8;
     }
     else if (GV.REGOPCODE == 7) {
-        if (GV.OperandSize == 16) {
+        if ((*pMyDisasm).Prefix.OperandSizeState == InUsePrefix) {
+            PrefOpSizeMandatory(pMyDisasm);
             (*pMyDisasm).Instruction.Category = SSE_INSTRUCTION+SHIFT_ROTATE;
-            GV.MemDecoration = Arg1dqword;
             GV.ImmediatSize = 8;
-            GV.SSE_ = 1;
-            MOD_RM(&(*pMyDisasm).Argument1, pMyDisasm);
-            GV.SSE_ = 0;
+            MOD_RM_SSE(&(*pMyDisasm).Argument1, pMyDisasm);
+            (*pMyDisasm).Argument1.AccessMode = READ+WRITE;
             if (GV.MOD_== 0x3) {
-                #ifndef BEA_LIGHT_DISASSEMBLY
-                   (void) strcpy ((*pMyDisasm).Instruction.Mnemonic, "pslldq ");
-                #endif
+                (*pMyDisasm).Instruction.Mnemonic = I_PSLLDQ;
             }
             else {
                 FailDecode(pMyDisasm);
             }
-            GV.EIP_ += GV.DECALAGE_EIP+3;
+            GV.EIP_ += 2;
             if (!Security(0, pMyDisasm)) return;
 
             MyNumber = *((UInt8*)(UIntPtr) (GV.EIP_-1));
-            #ifndef BEA_LIGHT_DISASSEMBLY
-               (void) CopyFormattedNumber(pMyDisasm, (char*) &(*pMyDisasm).Argument2.ArgMnemonic,"%.2X",(Int64) MyNumber);
-            #endif
             (*pMyDisasm).Instruction.Immediat = MyNumber;
             (*pMyDisasm).Argument2.ArgType = CONSTANT_TYPE+ABSOLUTE_;
             (*pMyDisasm).Argument2.ArgSize = 8;
